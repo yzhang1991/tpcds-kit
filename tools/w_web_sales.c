@@ -53,6 +53,7 @@
 #include "permute.h"
 #include "scd.h"
 #include "parallel.h"
+#include "params.h"
 
 struct W_WEB_SALES_TBL g_w_web_sales;
 ds_key_t skipDays(int nTable, ds_key_t *pRemainder);

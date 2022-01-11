@@ -50,6 +50,7 @@
 #include "permute.h"
 #include "scd.h"
 #include "parallel.h"
+#include "params.h"
 #ifdef JMS
 extern rng_t Streams[];
 #endif
