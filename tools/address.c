@@ -32,7 +32,7 @@
  * 
  * Contributors:
  * Gradient Systems
- */ 
+ */
 #include "config.h"
 #include "porting.h"
 #include <stdio.h>
@@ -50,12 +50,11 @@ static int s_nCountyCount = 0;
 static int s_nCityCount = 0;
 
 void
-resetCountCount(void)
-{
-   s_nCountyCount = 0;
-   s_nCityCount = 0;
+resetCountCount(void) {
+    s_nCountyCount = 0;
+    s_nCityCount = 0;
 
-   return;
+    return;
 }
 
 /*
@@ -73,86 +72,77 @@ resetCountCount(void)
 * TODO: None
 */
 int
-mk_address(ds_addr_t *pAddr, int nColumn)
-{
-	int i,
-		nRegion;
-	char *szZipPrefix,
-		szAddr[100];
-	static int nMaxCities,
-      nMaxCounties,
-		bInit = 0;
-   tdef *pTdef;
-		
-	if (!bInit)
-	{
-      nMaxCities = (int)get_rowcount(ACTIVE_CITIES);
-      nMaxCounties = (int)get_rowcount(ACTIVE_COUNTIES);
-		bInit = 1;
-	}
-	
-	/* street_number is [1..1000] */
-	genrand_integer(&pAddr->street_num, DIST_UNIFORM, 1, 1000, 0, nColumn);
+mk_address(ds_addr_t *pAddr, int nColumn) {
+    int i,
+            nRegion;
+    char *szZipPrefix,
+            szAddr[100];
+    static int nMaxCities,
+            nMaxCounties,
+            bInit = 0;
+    tdef *pTdef;
 
-	/* street names are picked from a distribution */
-	pick_distribution(&pAddr->street_name1, "street_names",1, 1, nColumn);
-	pick_distribution(&pAddr->street_name2, "street_names", 1, 2, nColumn);
+    if (!bInit) {
+        nMaxCities = (int) get_rowcount(ACTIVE_CITIES);
+        nMaxCounties = (int) get_rowcount(ACTIVE_COUNTIES);
+        bInit = 1;
+    }
 
-	/* street type is picked from a distribution */
-	pick_distribution(&pAddr->street_type, "street_type", 1, 1, nColumn);
+    /* street_number is [1..1000] */
+    genrand_integer(&pAddr->street_num, DIST_UNIFORM, 1, 1000, 0, nColumn);
 
-	/* suite number is alphabetic 50% of the time */
-	genrand_integer(&i, DIST_UNIFORM, 1, 100, 0, nColumn);
-	if (i & 0x01)
-	{
-		sprintf(pAddr->suite_num, "Suite %d", (i >> 1) * 10);
-	}
-	else
-	{
-		sprintf(pAddr->suite_num, "Suite %c", ((i >> 1) % 25) + 'A');
-	}
+    /* street names are picked from a distribution */
+    pick_distribution(&pAddr->street_name1, "street_names", 1, 1, nColumn);
+    pick_distribution(&pAddr->street_name2, "street_names", 1, 2, nColumn);
 
-	pTdef = getTdefsByNumber(getTableFromColumn(nColumn));
-   
-   /* city is picked from a distribution which maps to large/medium/small */
-	if (pTdef->flags & FL_SMALL)
-   {
-      i = (int)get_rowcount(getTableFromColumn(nColumn));
-      genrand_integer(&i, DIST_UNIFORM, 1, (nMaxCities > i)?i:nMaxCities, 0, nColumn);
-		dist_member(&pAddr->city, "cities", i, 1);	
-   }
-	else
-		pick_distribution(&pAddr->city, "cities", 1, 6, nColumn);
-	
+    /* street type is picked from a distribution */
+    pick_distribution(&pAddr->street_type, "street_type", 1, 1, nColumn);
 
-	/* county is picked from a distribution, based on population and keys the rest */
-	if (pTdef->flags & FL_SMALL)
-   {
-      i = (int)get_rowcount(getTableFromColumn(nColumn));
-      genrand_integer(&nRegion, DIST_UNIFORM, 1, (nMaxCounties > i)?i:nMaxCounties, 0, nColumn);
-		dist_member(&pAddr->county, "fips_county", nRegion, 2);	
-   }
-   else
-      nRegion = pick_distribution(&pAddr->county, "fips_county", 2, 1, nColumn);
+    /* suite number is alphabetic 50% of the time */
+    genrand_integer(&i, DIST_UNIFORM, 1, 100, 0, nColumn);
+    if (i & 0x01) {
+        sprintf(pAddr->suite_num, "Suite %d", (i >> 1) * 10);
+    } else {
+        sprintf(pAddr->suite_num, "Suite %c", ((i >> 1) % 25) + 'A');
+    }
 
-   /* match state with the selected region/county */
-   dist_member(&pAddr->state, "fips_county", nRegion, 3);
-	
-   /* match the zip prefix with the selected region/county */
-	pAddr->zip = city_hash(0, pAddr->city);
-   /* 00000 - 00600 are unused. Avoid them */
-   dist_member((void *)&szZipPrefix, "fips_county", nRegion, 5);
-   if (!(szZipPrefix[0] - '0') && (pAddr->zip < 9400))
-      pAddr->zip += 600;      
-	pAddr->zip += (szZipPrefix[0] - '0') * 10000;
+    pTdef = getTdefsByNumber(getTableFromColumn(nColumn));
 
-	sprintf(szAddr, "%d %s %s %s", 
-		pAddr->street_num, pAddr->street_name1, pAddr->street_name2, pAddr->street_type);
-	pAddr->plus4 = city_hash(0, szAddr);
-	dist_member (&pAddr->gmt_offset, "fips_county", nRegion, 6);
-	strcpy(pAddr->country, "United States");
+    /* city is picked from a distribution which maps to large/medium/small */
+    if (pTdef->flags & FL_SMALL) {
+        i = (int) get_rowcount(getTableFromColumn(nColumn));
+        genrand_integer(&i, DIST_UNIFORM, 1, (nMaxCities > i) ? i : nMaxCities, 0, nColumn);
+        dist_member(&pAddr->city, "cities", i, 1);
+    } else
+        pick_distribution(&pAddr->city, "cities", 1, 6, nColumn);
 
-	return(0);
+
+    /* county is picked from a distribution, based on population and keys the rest */
+    if (pTdef->flags & FL_SMALL) {
+        i = (int) get_rowcount(getTableFromColumn(nColumn));
+        genrand_integer(&nRegion, DIST_UNIFORM, 1, (nMaxCounties > i) ? i : nMaxCounties, 0, nColumn);
+        dist_member(&pAddr->county, "fips_county", nRegion, 2);
+    } else
+        nRegion = pick_distribution(&pAddr->county, "fips_county", 2, 1, nColumn);
+
+    /* match state with the selected region/county */
+    dist_member(&pAddr->state, "fips_county", nRegion, 3);
+
+    /* match the zip prefix with the selected region/county */
+    pAddr->zip = city_hash(0, pAddr->city);
+    /* 00000 - 00600 are unused. Avoid them */
+    dist_member((void *) &szZipPrefix, "fips_county", nRegion, 5);
+    if (!(szZipPrefix[0] - '0') && (pAddr->zip < 9400))
+        pAddr->zip += 600;
+    pAddr->zip += (szZipPrefix[0] - '0') * 10000;
+
+    sprintf(szAddr, "%d %s %s %s",
+            pAddr->street_num, pAddr->street_name1, pAddr->street_name2, pAddr->street_type);
+    pAddr->plus4 = city_hash(0, szAddr);
+    dist_member (&pAddr->gmt_offset, "fips_county", nRegion, 6);
+    strcpy(pAddr->country, "United States");
+
+    return (0);
 }
 
 
@@ -173,11 +163,10 @@ mk_address(ds_addr_t *pAddr, int nColumn)
 * Side Effects:
 * TODO: 20030422 jms should be replaced if there is no table variation
 */
-int mk_streetnumber(int nTable, int *dest)
-{
-	genrand_integer(dest, DIST_UNIFORM, 1, 1000, 0, nTable);
+int mk_streetnumber(int nTable, int *dest) {
+    genrand_integer(dest, DIST_UNIFORM, 1, 1000, 0, nTable);
 
-	return(0);
+    return (0);
 }
 
 /*
@@ -197,23 +186,19 @@ int mk_streetnumber(int nTable, int *dest)
 * Side Effects:
 * TODO: 20010615 JMS return code is meaningless
 */
-int	mk_suitenumber(int nTable, char *dest)
-{
-	int i;
+int mk_suitenumber(int nTable, char *dest) {
+    int i;
 
-	genrand_integer(&i, DIST_UNIFORM, 1, 100, 0, nTable);
-	if (i <= 50)
-	{
-		genrand_integer(&i, DIST_UNIFORM, 1, 1000, 0, nTable);
-		sprintf(dest, "Suite %d", i);
-	}
-	else
-	{
-		genrand_integer(&i, DIST_UNIFORM, 0, 25, 0, nTable);
-		sprintf(dest, "Suite %c", i + 'A');
-	}
+    genrand_integer(&i, DIST_UNIFORM, 1, 100, 0, nTable);
+    if (i <= 50) {
+        genrand_integer(&i, DIST_UNIFORM, 1, 1000, 0, nTable);
+        sprintf(dest, "Suite %d", i);
+    } else {
+        genrand_integer(&i, DIST_UNIFORM, 0, 25, 0, nTable);
+        sprintf(dest, "Suite %c", i + 'A');
+    }
 
-	return(0);
+    return (0);
 }
 
 /*
@@ -234,19 +219,18 @@ int	mk_suitenumber(int nTable, char *dest)
 * Side Effects:
 * TODO: 20010615 JMS return code is meaningless
 */
-int mk_streetname(int nTable, char *dest)
-{
-	char *pTemp1 = NULL, 
-		*pTemp2 = NULL;
+int mk_streetname(int nTable, char *dest) {
+    char *pTemp1 = NULL,
+            *pTemp2 = NULL;
 
-	pick_distribution((void *)&pTemp1, "street_names", (int)1, (int)1, nTable);
-	pick_distribution((void *)&pTemp2, "street_names", (int)1, (int)2, nTable);
-	if (strlen(pTemp2))
-		sprintf(dest, "%s %s", pTemp1, pTemp2);
-	else
-		strcpy(dest, pTemp1);
+    pick_distribution((void *) &pTemp1, "street_names", (int) 1, (int) 1, nTable);
+    pick_distribution((void *) &pTemp2, "street_names", (int) 1, (int) 2, nTable);
+    if (strlen(pTemp2))
+        sprintf(dest, "%s %s", pTemp1, pTemp2);
+    else
+        strcpy(dest, pTemp1);
 
-	return(0);
+    return (0);
 }
 
 /*
@@ -267,11 +251,10 @@ int mk_streetname(int nTable, char *dest)
 * Side Effects:
 * TODO: 20030423 jms should be replaced if there is no per-table variation
 */
-int mk_city(int nTable, char **dest)
-{
-	pick_distribution((void *)dest, "cities", (int)1, (int)get_int("_SCALE_INDEX"), 11);
+int mk_city(int nTable, char **dest) {
+    pick_distribution((void *) dest, "cities", (int) 1, (int) get_int("_SCALE_INDEX"), 11);
 
-	return(0);
+    return (0);
 }
 
 /*
@@ -289,29 +272,26 @@ int mk_city(int nTable, char **dest)
 * TODO: None
 */
 int
-city_hash(int nTable, char *name)
-{
-	char *cp;
-	int hash_value = 0,
-		res = 0;
+city_hash(int nTable, char *name) {
+    char *cp;
+    int hash_value = 0,
+            res = 0;
 
-	for (cp = name; *cp; cp++)
-		{
-		hash_value *= 26;
-		hash_value -= 'A';
-		hash_value += *cp;
-		if (hash_value > 1000000)
-			{
-			hash_value %= 10000;
-			res += hash_value;
-			hash_value = 0;
-			}
-		}
-	hash_value %= 1000;
-	res += hash_value;
-	res %= 10000; 	/* looking for a 4 digit result */
+    for (cp = name; *cp; cp++) {
+        hash_value *= 26;
+        hash_value -= 'A';
+        hash_value += *cp;
+        if (hash_value > 1000000) {
+            hash_value %= 10000;
+            res += hash_value;
+            hash_value = 0;
+        }
+    }
+    hash_value %= 1000;
+    res += hash_value;
+    res %= 10000;    /* looking for a 4 digit result */
 
-	return(res);
+    return (res);
 
 }
 
@@ -334,17 +314,16 @@ city_hash(int nTable, char *name)
 * Side Effects:
 * TODO: 20010615 JMS return code is meaningless
 */
-int mk_zipcode(int nTable, char *dest, int nRegion, char *city)
-{
-	char *szZipPrefix = NULL;
-	int nCityCode;
-	int nPlusFour;
+int mk_zipcode(int nTable, char *dest, int nRegion, char *city) {
+    char *szZipPrefix = NULL;
+    int nCityCode;
+    int nPlusFour;
 
-	dist_member((void *)&szZipPrefix, "fips_county", nRegion, 5);
-	nCityCode = city_hash(nTable, city);
-	genrand_integer(&nPlusFour, DIST_UNIFORM, 1, 9999, 0, nTable);
-	sprintf(dest, "%s%04d-%04d", szZipPrefix, nCityCode, nPlusFour);
+    dist_member((void *) &szZipPrefix, "fips_county", nRegion, 5);
+    nCityCode = city_hash(nTable, city);
+    genrand_integer(&nPlusFour, DIST_UNIFORM, 1, 9999, 0, nTable);
+    sprintf(dest, "%s%04d-%04d", szZipPrefix, nCityCode, nPlusFour);
 
-	return(0);
+    return (0);
 }
 

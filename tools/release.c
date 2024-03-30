@@ -32,7 +32,7 @@
  * 
  * Contributors:
  * Gradient Systems
- */ 
+ */
 #include "config.h"
 #include "porting.h"
 #include <stdio.h>
@@ -54,14 +54,13 @@
  * TODO: None
  */
 int
-printReleaseInfo (char *param_name, char *msg)
-{
-	fprintf (stderr,
-		"%s Population Generator (Version %d.%d.%d%s)\n",
-		get_str("PROG"), VERSION, RELEASE, MODIFICATION, PATCH);
-	fprintf (stderr, "Copyright %s %s\n", COPYRIGHT, C_DATES);
-	
-	exit(0);
+printReleaseInfo(char *param_name, char *msg) {
+    fprintf(stderr,
+            "%s Population Generator (Version %d.%d.%d%s)\n",
+            get_str("PROG"), VERSION, RELEASE, MODIFICATION, PATCH);
+    fprintf(stderr, "Copyright %s %s\n", COPYRIGHT, C_DATES);
+
+    exit(0);
 }
 
 

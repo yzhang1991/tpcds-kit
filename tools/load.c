@@ -32,7 +32,7 @@
  * 
  * Contributors:
  * Gradient Systems
- */ 
+ */
 #include "config.h"
 #include "porting.h"
 #include "tables.h"
@@ -59,10 +59,9 @@ SQLHENV	henv;
 * Side Effects:
 * TODO: None
 */
-int 
-create_table(int nTable)
-{
-	return(0);
+int
+create_table(int nTable) {
+    return (0);
 }
 
 /*
@@ -80,16 +79,14 @@ create_table(int nTable)
 * TODO: None
 */
 void
-load_init(void)
-
-{
+load_init(void) {
 #ifdef SQLSERVER
-	SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &henv);
-	SQLSetEnvAttr(henv, SQL_ATTR_ODBC_VERSION, (void *)SQL_OV_ODBC3, 0);
+    SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &henv);
+    SQLSetEnvAttr(henv, SQL_ATTR_ODBC_VERSION, (void *)SQL_OV_ODBC3, 0);
 #endif
 
-	return;
-}	
+    return;
+}
 
 /*
 * Routine: 
@@ -105,12 +102,11 @@ load_init(void)
 * Side Effects:
 * TODO: None
 */
-void 
-load_close(void)
-{
+void
+load_close(void) {
 #ifdef SQLSERVER
-	SQLFreeHandle(SQL_HANDLE_ENV, henv);
+    SQLFreeHandle(SQL_HANDLE_ENV, henv);
 #endif
 
-	return;
+    return;
 }

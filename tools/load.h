@@ -32,11 +32,16 @@
  * 
  * Contributors:
  * Gradient Systems
- */ 
+ */
 #ifndef LOAD_H
 #define LOAD_H
+
 #include "tables.h"
+
 void load_init(void);
+
 void load_close(void);
+
 int create_table(int nTable);
+
 #endif

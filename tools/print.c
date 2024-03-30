@@ -32,15 +32,19 @@
  * 
  * Contributors:
  * Gradient Systems
- */ 
+ */
 #include "config.h"
 #include "porting.h"
 #include <stdio.h>
+
 #ifdef WIN32
 #include <io.h>
 #else
+
 #include <unistd.h>
+
 #endif
+
 #include "tables.h"
 #include "print.h"
 #include "tdef_functions.h"
@@ -63,45 +67,40 @@ static ds_key_t nullBuf;
 static int nullFirst;
 #define nullCheck(x) ((nullBuf >> (x - nullFirst)) & 1)
 
-int print_jdate (FILE *pFile, ds_key_t kValue);
+int print_jdate(FILE *pFile, ds_key_t kValue);
 
-void 
-print_close(int tbl)
-{
-   tdef *pTdef = getSimpleTdefsByNumber(tbl);
+void
+print_close(int tbl) {
+    tdef *pTdef = getSimpleTdefsByNumber(tbl);
 
-	fpOutfile = NULL;
-	if (pTdef->outfile)
-	{
-		fclose(pTdef->outfile);
-		pTdef->outfile = NULL;
-	}
+    fpOutfile = NULL;
+    if (pTdef->outfile) {
+        fclose(pTdef->outfile);
+        pTdef->outfile = NULL;
+    }
 
-	if (pTdef->flags & FL_PARENT)
-      print_close(pTdef->nParam);
+    if (pTdef->flags & FL_PARENT)
+        print_close(pTdef->nParam);
 
-	return;
+    return;
 }
 
 int
-print_separator (int sep)
-{
-	int res = 0;
-	static char pDelimiter;
-	static int init = 0;
-	
-	if (!init)
-	{
-        pDelimiter = get_str ("DELIMITER")[0];
+print_separator(int sep) {
+    int res = 0;
+    static char pDelimiter;
+    static int init = 0;
+
+    if (!init) {
+        pDelimiter = get_str("DELIMITER")[0];
         init = 1;
-	}
-	
-	if (sep)
-	{
+    }
+
+    if (sep) {
         linebuf[linebufpos++] = pDelimiter;
-	}
-	   
-	return (res);
+    }
+
+    return (res);
 }
 
 static char *format_int(int v) {
@@ -116,6 +115,7 @@ static char *format_int(int v) {
     }
     return buf;
 }
+
 static char *format_long(long long v) {
     static char tmp[30];
     char *buf = tmp + 30;
@@ -128,14 +128,15 @@ static char *format_long(long long v) {
     }
     return buf;
 }
-static char *format_decimal(decimal_t * val) {
+
+static char *format_decimal(decimal_t *val) {
     static char tmp[20];
     char *buf = tmp + 20;
     *(--buf) = '\0';
     int v = val->number;
     int f, s = v < 0;
     if (s) v = -v;
-    f = v %100;
+    f = v % 100;
     v /= 100;
     *(--buf) = '0' + f % 10;
     *(--buf) = '0' + f / 10;
@@ -165,9 +166,8 @@ static char *format_decimal(decimal_t * val) {
 * TODO: None
 */
 FILE *
-print_prep (int table, int update)
-{
-   return (NULL);
+print_prep(int table, int update) {
+    return (NULL);
 }
 
 /*
@@ -186,10 +186,8 @@ print_prep (int table, int update)
 *		20020125 cast to/from 64b is messy, assumes int/pointer are same size
 */
 void
-print_integer (int nColumn, int val, int sep)
-{
-    if (!nullCheck(nColumn))
-    {
+print_integer(int nColumn, int val, int sep) {
+    if (!nullCheck(nColumn)) {
         char *vs;
         if (val < 0) {
             linebuf[linebufpos++] = '-';
@@ -199,43 +197,38 @@ print_integer (int nColumn, int val, int sep)
         strcpy(linebuf + linebufpos, vs);
         linebufpos += strlen(vs);
     }
-    print_separator (sep);
+    print_separator(sep);
 }
 
 void
-print_varchar (int nColumn, char *val, int sep)
-{
-	size_t nLength;
+print_varchar(int nColumn, char *val, int sep) {
+    size_t nLength;
 
-	if (!nullCheck(nColumn) && (val != NULL))
-	{
+    if (!nullCheck(nColumn) && (val != NULL)) {
         strcpy(linebuf + linebufpos, val);
         linebufpos += strlen(val);
-	}
-	print_separator (sep);
-	
-   return;
+    }
+    print_separator(sep);
+
+    return;
 }
 
 void
-print_delete (int * val)
-{
-   if (print_jdate(fpDeleteFile, *val))
-	{
-      fprintf(stderr, "ERROR: Failed to write delete key\n");
-      exit(-1);
-	}
-   fprintf(fpDeleteFile, "%s", get_str("DELIMITER"));
-   if (print_jdate(fpDeleteFile, *(val + 1)))
-	{
-      fprintf(stderr, "ERROR: Failed to write delete key\n");
-      exit(-1);
-	}
-   if (is_set("TERMINATE"))
-	   fprintf(fpDeleteFile, get_str("DELIMITER"));
-   fprintf(fpDeleteFile, "\n");
-   
-   return;
+print_delete(int *val) {
+    if (print_jdate(fpDeleteFile, *val)) {
+        fprintf(stderr, "ERROR: Failed to write delete key\n");
+        exit(-1);
+    }
+    fprintf(fpDeleteFile, "%s", get_str("DELIMITER"));
+    if (print_jdate(fpDeleteFile, *(val + 1))) {
+        fprintf(stderr, "ERROR: Failed to write delete key\n");
+        exit(-1);
+    }
+    if (is_set("TERMINATE"))
+        fprintf(fpDeleteFile, get_str("DELIMITER"));
+    fprintf(fpDeleteFile, "\n");
+
+    return;
 }
 
 /*
@@ -262,34 +255,30 @@ print_cp_delete (int nCatalog, int nPage)
 */
 
 void
-print_date (int nColumn, ds_key_t val, int sep)
-{
-	if (!nullCheck(nColumn))
-	{
-		if (val > 0)
-		{
+print_date(int nColumn, ds_key_t val, int sep) {
+    if (!nullCheck(nColumn)) {
+        if (val > 0) {
             date_t dTemp;
-            jtodt (&dTemp, (int) val);
+            jtodt(&dTemp, (int) val);
             memcpy(linebuf + linebufpos, dttostr(&dTemp), 10);
             linebufpos += 10;
-		}
-	}
-	
-	print_separator (sep);
+        }
+    }
+
+    print_separator(sep);
 }
 
 void
-print_time (int nColumn, ds_key_t val, int sep)
-{
-	int nHours, nMinutes, nSeconds;
+print_time(int nColumn, ds_key_t val, int sep) {
+    int nHours, nMinutes, nSeconds;
 
-	nHours = (int)(val / 3600);
-	val -= 3600 * nHours;
-	nMinutes = (int)(val / 60);
-	val -= 60 * nMinutes;
-	nSeconds = (int)(val % 60);
-	
-	if (!nullCheck(nColumn)) {
+    nHours = (int) (val / 3600);
+    val -= 3600 * nHours;
+    nMinutes = (int) (val / 60);
+    val -= 60 * nMinutes;
+    nSeconds = (int) (val % 60);
+
+    if (!nullCheck(nColumn)) {
         if (val != -1) {
             linebuf[linebufpos++] = '0' + nHours / 10;
             linebuf[linebufpos++] = '0' + nHours % 10;
@@ -300,64 +289,57 @@ print_time (int nColumn, ds_key_t val, int sep)
         }
     }
 
-	print_separator (sep);
+    print_separator(sep);
 }
 
 void
-print_decimal (int nColumn, decimal_t * val, int sep)
-{
-    if (!nullCheck(nColumn))
-    {
+print_decimal(int nColumn, decimal_t *val, int sep) {
+    if (!nullCheck(nColumn)) {
         char *vs = format_decimal(val);
         strcpy(linebuf + linebufpos, vs);
         linebufpos += strlen(vs);
     }
-    print_separator (sep);
+    print_separator(sep);
 
     return;
 }
+
 void
-print_key (int nColumn, ds_key_t val, int sep)
-{
-    if (!nullCheck(nColumn) && val != (ds_key_t)-1)
-    {
+print_key(int nColumn, ds_key_t val, int sep) {
+    if (!nullCheck(nColumn) && val != (ds_key_t) -1) {
         char *vs = format_long(val);
         strcpy(linebuf + linebufpos, vs);
         linebufpos += strlen(vs);
     }
-    print_separator (sep);
+    print_separator(sep);
 }
 
 void
-print_id (int nColumn, ds_key_t val, int sep)
-{
-   char szID[RS_BKEY + 1];
-   
-   if (!nullCheck(nColumn))
-   {
-      if (val != (ds_key_t) -1) /* -1 is a special value, indicating NULL */
-      {
-         mk_bkey(szID, val, 0);
-          memcpy(linebuf + linebufpos, szID, RS_BKEY);
-          linebufpos += RS_BKEY;
-      }
-   }
-  print_separator (sep);
-   
-   return;
+print_id(int nColumn, ds_key_t val, int sep) {
+    char szID[RS_BKEY + 1];
+
+    if (!nullCheck(nColumn)) {
+        if (val != (ds_key_t) -1) /* -1 is a special value, indicating NULL */
+        {
+            mk_bkey(szID, val, 0);
+            memcpy(linebuf + linebufpos, szID, RS_BKEY);
+            linebufpos += RS_BKEY;
+        }
+    }
+    print_separator(sep);
+
+    return;
 }
 
 void
-print_boolean (int nColumn, int val, int sep)
-{
-	if (!nullCheck(nColumn))
-	{
+print_boolean(int nColumn, int val, int sep) {
+    if (!nullCheck(nColumn)) {
         linebuf[linebufpos++] = val ? 'Y' : 'N';
-	}
+    }
 
-	print_separator (sep);
+    print_separator(sep);
 
-	return;
+    return;
 }
 
 /*
@@ -375,73 +357,71 @@ print_boolean (int nColumn, int val, int sep)
 * TODO: None
 */
 int
-print_start (int tbl)
-{
-   int res = 0;
-   char path[256];
-   tdef *pTdef = getSimpleTdefsByNumber(tbl);
+print_start(int tbl) {
+    int res = 0;
+    char path[256];
+    tdef *pTdef = getSimpleTdefsByNumber(tbl);
 
 
-   current_table = tbl;
+    current_table = tbl;
 
-   if (is_set_filter())
-	   fpOutfile = stdout;
-   else
-   {
-	   if (pTdef->outfile == NULL)
-	   {
-		   if (is_set("PARALLEL"))
-			   sprintf (path, "%s%c%s_%d_%d%s",
-			   get_str ("DIR"),
-			   PATH_SEP, getTableNameByID (tbl), 
-			   get_int("CHILD"), get_int("PARALLEL"), (is_set("VALIDATE"))?get_str ("VSUFFIX"):get_str ("SUFFIX"));
-		   else 
-		   {
-			   if (is_set("UPDATE"))
-				   sprintf (path, "%s%c%s_%d%s",
-				   get_str ("DIR"),
-				   PATH_SEP, getTableNameByID (tbl), get_int("UPDATE"), (is_set("VALIDATE"))?get_str ("VSUFFIX"):get_str ("SUFFIX"));
-			   else
-				   sprintf (path, "%s%c%s%s",
-				   get_str ("DIR"),
-				   PATH_SEP, getTableNameByID (tbl), (is_set("VALIDATE"))?get_str ("VSUFFIX"):get_str ("SUFFIX"));
-		   }
-		   if ((access (path, F_OK) != -1) && !is_set ("FORCE"))
-		   {
-			   fprintf (stderr,
-				   "ERROR: %s exists. Either remove it or use the FORCE option to overwrite it.\n",
-				   path);
-			   exit (-1);
-		   }
+    if (is_set_filter())
+        fpOutfile = stdout;
+    else {
+        if (pTdef->outfile == NULL) {
+            if (is_set("PARALLEL"))
+                sprintf(path, "%s%c%s_%d_%d%s",
+                        get_str("DIR"),
+                        PATH_SEP, getTableNameByID(tbl),
+                        get_int("CHILD"), get_int("PARALLEL"),
+                        (is_set("VALIDATE")) ? get_str("VSUFFIX") : get_str("SUFFIX"));
+            else {
+                if (is_set("UPDATE"))
+                    sprintf(path, "%s%c%s_%d%s",
+                            get_str("DIR"),
+                            PATH_SEP, getTableNameByID(tbl), get_int("UPDATE"),
+                            (is_set("VALIDATE")) ? get_str("VSUFFIX") : get_str("SUFFIX"));
+                else
+                    sprintf(path, "%s%c%s%s",
+                            get_str("DIR"),
+                            PATH_SEP, getTableNameByID(tbl),
+                            (is_set("VALIDATE")) ? get_str("VSUFFIX") : get_str("SUFFIX"));
+            }
+            if ((access(path, F_OK) != -1) && !is_set("FORCE")) {
+                fprintf(stderr,
+                        "ERROR: %s exists. Either remove it or use the FORCE option to overwrite it.\n",
+                        path);
+                exit(-1);
+            }
 #ifdef WIN32
-		   pTdef->outfile = fopen (path, "wt");
+            pTdef->outfile = fopen (path, "wt");
 #else
-		   pTdef->outfile = fopen (path, "w");
+            pTdef->outfile = fopen(path, "w");
 #endif
-	   }
-	fpOutfile = pTdef->outfile;
-   }
-   
-   res = (fpOutfile != NULL);
+        }
+        fpOutfile = pTdef->outfile;
+    }
 
-   if (!res)                    /* open failed! */
-     {
+    res = (fpOutfile != NULL);
+
+    if (!res)                    /* open failed! */
+    {
         INTERNAL ("Failed to open output file!");
-	exit(0);
-     }
+        exit(0);
+    }
 #ifdef WIN32
-   else if (setvbuf (fpOutfile, NULL, _IOFBF, 32767))
-     {
-        INTERNAL ("setvbuf() FAILED");
-     }
+    else if (setvbuf (fpOutfile, NULL, _IOFBF, 32767))
+      {
+         INTERNAL ("setvbuf() FAILED");
+      }
 #endif
 
-   pTdef->flags |= FL_OPEN;
-   linebufpos = 0;
-   nullBuf = pTdef->kNullBitMap;
-   nullFirst = pTdef->nFirstColumn;
+    pTdef->flags |= FL_OPEN;
+    linebufpos = 0;
+    nullBuf = pTdef->kNullBitMap;
+    nullFirst = pTdef->nFirstColumn;
 
-   return (0);
+    return (0);
 }
 
 /*
@@ -459,31 +439,28 @@ print_start (int tbl)
 * TODO: None
 */
 int
-print_end (int tbl)
-{
-   int res = 0;
-   static int init = 0;
-   static int add_term = 0;
-   static char term[10];
+print_end(int tbl) {
+    int res = 0;
+    static int init = 0;
+    static int add_term = 0;
+    static char term[10];
 
-   if (!init)
-     {
-        if (is_set ("TERMINATE"))
-          {
-             strncpy (term, get_str ("DELIMITER"), 9);
-             add_term = strlen(term);
-          }
+    if (!init) {
+        if (is_set("TERMINATE")) {
+            strncpy(term, get_str("DELIMITER"), 9);
+            add_term = strlen(term);
+        }
         init = 1;
-     }
+    }
 
-   if (add_term) {
-       memcpy(linebuf + linebufpos, term, add_term);
-       linebufpos += add_term;
-   }
+    if (add_term) {
+        memcpy(linebuf + linebufpos, term, add_term);
+        linebufpos += add_term;
+    }
     linebuf[linebufpos++] = '\n';
     fwrite(linebuf, 1, linebufpos, fpOutfile);
 
-   return (res);
+    return (res);
 }
 
 /*
@@ -501,46 +478,43 @@ print_end (int tbl)
 * TODO: None
 */
 int
-openDeleteFile(int bOpen)
-{
-   int res = 0;
-   char path[256];
-   
-   if (!bOpen)
-      fclose(fpDeleteFile);
-   else
-   {
-      sprintf (path, "%s%c%s%d%s",
-         get_str ("DIR"),
-         PATH_SEP, arDeleteFiles[bOpen], get_int("UPDATE"), get_str("SUFFIX"));
-      if ((access (path, F_OK) != -1) && !is_set ("FORCE"))
-      {
-         fprintf (stderr,
-            "ERROR: %s exists. Either remove it or use the FORCE option to overwrite it.\n",
-            path);
-         exit (-1);
-      }
+openDeleteFile(int bOpen) {
+    int res = 0;
+    char path[256];
+
+    if (!bOpen)
+        fclose(fpDeleteFile);
+    else {
+        sprintf(path, "%s%c%s%d%s",
+                get_str("DIR"),
+                PATH_SEP, arDeleteFiles[bOpen], get_int("UPDATE"), get_str("SUFFIX"));
+        if ((access(path, F_OK) != -1) && !is_set("FORCE")) {
+            fprintf(stderr,
+                    "ERROR: %s exists. Either remove it or use the FORCE option to overwrite it.\n",
+                    path);
+            exit(-1);
+        }
 #ifdef WIN32
-      fpDeleteFile = fopen (path, "wt");
+        fpDeleteFile = fopen (path, "wt");
 #else
-      fpDeleteFile = fopen (path, "w");
+        fpDeleteFile = fopen(path, "w");
 #endif
-      
-      res = (fpDeleteFile != NULL);
-      
-      if (!res)                    /* open failed! */
-      {
-         INTERNAL ("Failed to open output file!");
-      }
+
+        res = (fpDeleteFile != NULL);
+
+        if (!res)                    /* open failed! */
+        {
+            INTERNAL ("Failed to open output file!");
+        }
 #ifdef WIN32
-      else if (setvbuf (fpDeleteFile, NULL, _IOFBF, 32767))
-      {
-         INTERNAL ("setvbuf() FAILED");
-      }
+        else if (setvbuf (fpDeleteFile, NULL, _IOFBF, 32767))
+        {
+           INTERNAL ("setvbuf() FAILED");
+        }
 #endif
-   }
-   
-   return (0);
+    }
+
+    return (0);
 }
 
 /*
@@ -557,15 +531,13 @@ openDeleteFile(int bOpen)
 * Side Effects:
 */
 void
-print_string (char *szMessage, ds_key_t val)
-{
-	if (fprintf (fpOutfile, szMessage, val) < 0)
-	{
-		fprintf(stderr, "ERROR: Failed to write string\n");
-		exit(-1);
-	}
+print_string(char *szMessage, ds_key_t val) {
+    if (fprintf(fpOutfile, szMessage, val) < 0) {
+        fprintf(stderr, "ERROR: Failed to write string\n");
+        exit(-1);
+    }
 
-	return;
+    return;
 }
 
 /*
@@ -582,21 +554,20 @@ print_string (char *szMessage, ds_key_t val)
 * Side Effects:
 */
 int
-print_jdate (FILE *pFile, ds_key_t kValue)
-{
+print_jdate(FILE *pFile, ds_key_t kValue) {
 
     date_t dTemp;
 
-    jtodt (&dTemp, (int) kValue);
+    jtodt(&dTemp, (int) kValue);
 #if (defined(STR_QUOTES) && !defined(_MYSQL))
     if ((fwrite ("\"", 1, 1, pFile) != 1) ||
-		(fwrite(dttostr(&dTemp), 1, 10, pFile) != 10) ||
-		(fwrite ("\"", 1, 1, pFile)) != 1)
+        (fwrite(dttostr(&dTemp), 1, 10, pFile) != 10) ||
+        (fwrite ("\"", 1, 1, pFile)) != 1)
 #else
     if (fwrite(dttostr(&dTemp), 1, 10, pFile) != 10)
 #endif
-        return(-1);
-    return(0);
+        return (-1);
+    return (0);
 }
 
 /*
@@ -614,21 +585,18 @@ print_jdate (FILE *pFile, ds_key_t kValue)
 * TODO: None
 */
 void
-print_validation(ds_key_t kRowNumber)
-{
-	static int bInit = 0;
-	static char szValidateFormat[20];
+print_validation(ds_key_t kRowNumber) {
+    static int bInit = 0;
+    static char szValidateFormat[20];
 
-	if (!bInit)
-	{
-		sprintf(szValidateFormat, "Row #%s: ", HUGE_FORMAT);
-		bInit = 1;
-	}
-	
-	if (is_set("VALIDATE"))
-	{
-		print_string(szValidateFormat, kRowNumber);
-	}
+    if (!bInit) {
+        sprintf(szValidateFormat, "Row #%s: ", HUGE_FORMAT);
+        bInit = 1;
+    }
 
-	return;
+    if (is_set("VALIDATE")) {
+        print_string(szValidateFormat, kRowNumber);
+    }
+
+    return;
 }

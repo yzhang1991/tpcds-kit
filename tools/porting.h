@@ -32,14 +32,16 @@
  * 
  * Contributors:
  * Gradient Systems
- */ 
+ */
 #ifndef PORTING_H
 #define PORTING_H
 
 #ifdef USE_STRING_H
 #include <string.h>
 #else
+
 #include <strings.h>
+
 #endif
 
 #if !defined(MACOS) && defined(USE_VALUES_H)
@@ -55,7 +57,9 @@
 #endif
 
 #ifndef WIN32
+
 #include <sys/types.h>
+
 #else
 #define int32_t   __int32
 #define int64_t   __int64
@@ -66,7 +70,9 @@
 #define timeb _timeb
 #define ftime _ftime
 #else
+
 #include <sys/timeb.h>
+
 #endif
 
 typedef HUGE_TYPE ds_key_t;
@@ -75,7 +81,9 @@ typedef HUGE_TYPE ds_key_t;
  * add some functions that are not strictly ANSI standard
  */
 #ifndef strdup
+
 char *strdup(const char *);
+
 #endif
 
 #ifdef WIN32
@@ -120,7 +128,7 @@ char *strdup(const char *);
 
 #define INTERNAL(m) {\
 fprintf(stderr, "ERROR: %s\n\tFile: %s\n\tLine: %d\n", \
-	m, __FILE__, __LINE__); \
+    m, __FILE__, __LINE__); \
 }
 
 #define OPEN_CHECK(var, path) \
@@ -133,21 +141,21 @@ fprintf(stderr, "ERROR: %s\n\tFile: %s\n\tLine: %d\n", \
 
 #ifdef MEM_TEST
 #define MALLOC_CHECK(v)	\
-	if (v == NULL)	\
-		{	\
-		fprintf(stderr, "Malloc Failed at %d in %s\n", __LINE__, __FILE__);	\
-		exit(1);	\
-		} \
-	else \
-		{ \
-		fprintf(stderr, "Add (%x) %d at %d in %s\n", sizeof(*v), v, __LINE__, __FILE__); \
-		}
+    if (v == NULL)	\
+        {	\
+        fprintf(stderr, "Malloc Failed at %d in %s\n", __LINE__, __FILE__);	\
+        exit(1);	\
+        } \
+    else \
+        { \
+        fprintf(stderr, "Add (%x) %d at %d in %s\n", sizeof(*v), v, __LINE__, __FILE__); \
+        }
 #else
-#define MALLOC_CHECK(v)	\
-	if (v == NULL)	\
-		{	\
-		fprintf(stderr, "Malloc Failed at %d in %s\n", __LINE__, __FILE__);	\
-		exit(1);	\
-		} 
+#define MALLOC_CHECK(v)    \
+    if (v == NULL)    \
+        {    \
+        fprintf(stderr, "Malloc Failed at %d in %s\n", __LINE__, __FILE__);    \
+        exit(1);    \
+        }
 #endif /* MEM_TEST */
 #endif

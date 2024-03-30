@@ -32,7 +32,7 @@
  * 
  * Contributors:
  * Gradient Systems
- */ 
+ */
 #include "config.h"
 #include "porting.h"
 #include <stdio.h>
@@ -53,6 +53,7 @@
 
 extern struct W_ITEM_TBL g_w_item;
 extern struct W_ITEM_TBL g_OldValues;
+
 /*
 * Routine: 
 * Purpose: 
@@ -68,24 +69,22 @@ extern struct W_ITEM_TBL g_OldValues;
 * TODO: None
 */
 int
-mk_s_item (void* row, ds_key_t index)
-{
-   static int bInit = 0;
-   static int *pPermutation;
-   ds_key_t kIndex;
+mk_s_item(void *row, ds_key_t index) {
+    static int bInit = 0;
+    static int *pPermutation;
+    ds_key_t kIndex;
 
-   if (!bInit)
-   {
-      pPermutation = makePermutation(NULL, (int)getIDCount(ITEM),
-      S_ITEM_PERMUTE);
-      bInit = 1;
-   }
+    if (!bInit) {
+        pPermutation = makePermutation(NULL, (int) getIDCount(ITEM),
+                                       S_ITEM_PERMUTE);
+        bInit = 1;
+    }
 
-   kIndex = getPermutationEntry(pPermutation, (int)index);
-   mk_w_item(NULL, getSKFromID(kIndex, S_ITEM_ID));
-   row_stop(ITEM);
+    kIndex = getPermutationEntry(pPermutation, (int) index);
+    mk_w_item(NULL, getSKFromID(kIndex, S_ITEM_ID));
+    row_stop(ITEM);
 
-   return(0);
+    return (0);
 }
 
 /*
@@ -103,29 +102,28 @@ mk_s_item (void* row, ds_key_t index)
 * TODO: None
 */
 int
-pr_s_item(void *pSrc)
-{
-	struct W_ITEM_TBL *r;
+pr_s_item(void *pSrc) {
+    struct W_ITEM_TBL *r;
 
-	if (pSrc == NULL)
-		r = &g_w_item;
-	else
-		r = pSrc;
-	
-	print_start(S_ITEM);
-	print_varchar(S_ITEM_ID, r->i_item_id, 1);
-	print_varchar(S_ITEM_DESC, r->i_item_desc, 1);
-	print_decimal(S_ITEM_LIST_PRICE, &r->i_current_price, 1);
-	print_decimal(S_ITEM_WHOLESALE_COST, &r->i_wholesale_cost, 1);
-	print_varchar(S_ITEM_SIZE, r->i_size, 1);
-	print_varchar(S_ITEM_FORMULATION, r->i_formulation, 1);
-	print_varchar(S_ITEM_FLAVOR, r->i_color, 1);
-	print_varchar(S_ITEM_UNITS, r->i_units, 1);
-	print_varchar(S_ITEM_CONTAINER, r->i_container, 1);
-	print_key(S_ITEM_MANAGER_ID, r->i_manager_id, 0);
-	print_end(S_ITEM);
-	
-	return(0);
+    if (pSrc == NULL)
+        r = &g_w_item;
+    else
+        r = pSrc;
+
+    print_start(S_ITEM);
+    print_varchar(S_ITEM_ID, r->i_item_id, 1);
+    print_varchar(S_ITEM_DESC, r->i_item_desc, 1);
+    print_decimal(S_ITEM_LIST_PRICE, &r->i_current_price, 1);
+    print_decimal(S_ITEM_WHOLESALE_COST, &r->i_wholesale_cost, 1);
+    print_varchar(S_ITEM_SIZE, r->i_size, 1);
+    print_varchar(S_ITEM_FORMULATION, r->i_formulation, 1);
+    print_varchar(S_ITEM_FLAVOR, r->i_color, 1);
+    print_varchar(S_ITEM_UNITS, r->i_units, 1);
+    print_varchar(S_ITEM_CONTAINER, r->i_container, 1);
+    print_key(S_ITEM_MANAGER_ID, r->i_manager_id, 0);
+    print_end(S_ITEM);
+
+    return (0);
 }
 
 /*
@@ -142,37 +140,34 @@ pr_s_item(void *pSrc)
 * Side Effects:
 * TODO: None
 */
-int 
-ld_s_item(void *pSrc)
-{
-	struct W_ITEM_TBL *r;
-		
-	if (pSrc == NULL)
-		r = &g_w_item;
-	else
-		r = pSrc;
-	
-	return(0);
+int
+ld_s_item(void *pSrc) {
+    struct W_ITEM_TBL *r;
+
+    if (pSrc == NULL)
+        r = &g_w_item;
+    else
+        r = pSrc;
+
+    return (0);
 }
 
 int
-vld_s_item(int nTable, ds_key_t kRow, int *Permutation)
-{
-   static int bInit = 0;
-   static int *pPermutation;
-   table_func_t *pTF = getTdefFunctionsByNumber(ITEM);
+vld_s_item(int nTable, ds_key_t kRow, int *Permutation) {
+    static int bInit = 0;
+    static int *pPermutation;
+    table_func_t *pTF = getTdefFunctionsByNumber(ITEM);
 
-   if (!bInit)
-   {
-      pPermutation = makePermutation(NULL, (int)getIDCount(ITEM),
-      S_ITEM_PERMUTE);
-      bInit = 1;
-   }
+    if (!bInit) {
+        pPermutation = makePermutation(NULL, (int) getIDCount(ITEM),
+                                       S_ITEM_PERMUTE);
+        bInit = 1;
+    }
 
-   memset(&g_OldValues, 0, sizeof(struct W_ITEM_TBL));
-   pTF->validate(S_ITEM, kRow, pPermutation);
+    memset(&g_OldValues, 0, sizeof(struct W_ITEM_TBL));
+    pTF->validate(S_ITEM, kRow, pPermutation);
 
-   return(0);
+    return (0);
 }
 
 

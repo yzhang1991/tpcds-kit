@@ -32,7 +32,7 @@
  * 
  * Contributors:
  * Gradient Systems
- */ 
+ */
 #include "config.h"
 #include "porting.h"
 #include <stdio.h>
@@ -41,108 +41,95 @@
 #include "error_msg.h"
 
 list_t *
-makeList(int nFlags, int (*SortFunc)(const void *d1, const void *d2))
-{
-	list_t *pRes;
+makeList(int nFlags, int (*SortFunc)(const void *d1, const void *d2)) {
+    list_t *pRes;
 
-	pRes = (list_t *)malloc(sizeof(list_t));
-	MALLOC_CHECK(pRes);
-	if (pRes == NULL)
-		ReportError(QERR_NO_MEMORY, "client list", 1);
-	memset(pRes, 0, sizeof(list_t));
-	pRes->nFlags = nFlags;
-	pRes->pSortFunc = SortFunc;
+    pRes = (list_t *) malloc(sizeof(list_t));
+    MALLOC_CHECK(pRes);
+    if (pRes == NULL)
+        ReportError(QERR_NO_MEMORY, "client list", 1);
+    memset(pRes, 0, sizeof(list_t));
+    pRes->nFlags = nFlags;
+    pRes->pSortFunc = SortFunc;
 
-	return(pRes);
+    return (pRes);
 }
 
 list_t *
-addList(list_t *pList, void *pData)
-{
-	node_t *pNode;
-	node_t *pInsertPoint;
-	int bMoveForward = (pList->nFlags & L_FL_HEAD);
+addList(list_t *pList, void *pData) {
+    node_t *pNode;
+    node_t *pInsertPoint;
+    int bMoveForward = (pList->nFlags & L_FL_HEAD);
 
-   pNode = (node_t *)malloc(sizeof(node_t));
-	MALLOC_CHECK(pNode);
-   if (!pNode)
-      ReportErrorNoLine(QERR_NO_MEMORY, "client node", 1);
-	memset(pNode, 0, sizeof(node_t));
-	pNode->pData = pData;
+    pNode = (node_t *) malloc(sizeof(node_t));
+    MALLOC_CHECK(pNode);
+    if (!pNode)
+        ReportErrorNoLine(QERR_NO_MEMORY, "client node", 1);
+    memset(pNode, 0, sizeof(node_t));
+    pNode->pData = pData;
 
-	if (pList->nMembers == 0)	/* first node */
-	{
-		pList->head = pNode;
-		pList->tail = pNode;
-		pList->nMembers = 1;
-		return(pList);
-	}
+    if (pList->nMembers == 0)    /* first node */
+    {
+        pList->head = pNode;
+        pList->tail = pNode;
+        pList->nMembers = 1;
+        return (pList);
+    }
 
-	if (pList->nFlags & L_FL_SORT)
-	{
-			if (pList->pSortFunc(pData, pList->head->pData) <= 0)
-			{
-				/* new node become list head */
-				pNode->pNext = pList->head;
-				pList->head->pPrev = pNode;
-				pList->head = pNode;
-				pList->nMembers += 1;
-				return(pList);
-			}
-			pInsertPoint = pList->head;
+    if (pList->nFlags & L_FL_SORT) {
+        if (pList->pSortFunc(pData, pList->head->pData) <= 0) {
+            /* new node become list head */
+            pNode->pNext = pList->head;
+            pList->head->pPrev = pNode;
+            pList->head = pNode;
+            pList->nMembers += 1;
+            return (pList);
+        }
+        pInsertPoint = pList->head;
 
-		/* find the correct point to insert new node */
-		while (pInsertPoint)
-		{
-			if (pList->pSortFunc(pInsertPoint->pData, pData) < 0)
-				break;
-			pInsertPoint = (bMoveForward)?pInsertPoint->pNext:pInsertPoint->pPrev;
-		}
-		if (pInsertPoint) /* mid-list insert */
-		{
-			pNode->pNext = pInsertPoint->pNext;
-			pNode->pPrev = pInsertPoint;
-			pInsertPoint->pNext = pNode;
-		}
-		else
-		{
-			if (bMoveForward)
-			{
-				/* new node becomes list tail */
-				pNode->pPrev = pList->tail;
-				pList->tail->pNext = pNode;
-				pList->tail = pNode;
-			}
-			else
-			{
-				/* new node become list head */
-				pNode->pNext = pList->head;
-				pList->head->pPrev = pNode;
-				pList->head = pNode;
-			}
-		}
+        /* find the correct point to insert new node */
+        while (pInsertPoint) {
+            if (pList->pSortFunc(pInsertPoint->pData, pData) < 0)
+                break;
+            pInsertPoint = (bMoveForward) ? pInsertPoint->pNext : pInsertPoint->pPrev;
+        }
+        if (pInsertPoint) /* mid-list insert */
+        {
+            pNode->pNext = pInsertPoint->pNext;
+            pNode->pPrev = pInsertPoint;
+            pInsertPoint->pNext = pNode;
+        } else {
+            if (bMoveForward) {
+                /* new node becomes list tail */
+                pNode->pPrev = pList->tail;
+                pList->tail->pNext = pNode;
+                pList->tail = pNode;
+            } else {
+                /* new node become list head */
+                pNode->pNext = pList->head;
+                pList->head->pPrev = pNode;
+                pList->head = pNode;
+            }
+        }
 
-		pList->nMembers += 1;
-		
-		return(pList);
-	}
+        pList->nMembers += 1;
 
-		if (pList->nFlags & L_FL_HEAD)
-		{
-			pNode->pNext = pList->head;
-			pList->head->pPrev = pNode;
-			pList->head = pNode;
-			pList->nMembers += 1;
-		}
-		else
-		{
-			pNode->pPrev = pList->tail;
-			pList->tail->pNext = pNode;
-			pList->tail = pNode;
-			pList->nMembers += 1;
-		}
+        return (pList);
+    }
 
-	return(pList);
+    if (pList->nFlags & L_FL_HEAD) {
+        pNode->pNext = pList->head;
+        pList->head->pPrev = pNode;
+        pList->head = pNode;
+        pList->nMembers += 1;
+    } else {
+        pNode->pPrev = pList->tail;
+        pList->tail->pNext = pNode;
+        pList->tail = pNode;
+        pList->nMembers += 1;
+    }
+
+    return (pList);
 }
 
 /*
@@ -160,29 +147,25 @@ addList(list_t *pList, void *pData)
 * TODO: None
 */
 void *
-removeItem(list_t *pList, int bHead)
-{
-	void *pResult;
-	
-	if (pList->nMembers == 0)
-		return(NULL);
+removeItem(list_t *pList, int bHead) {
+    void *pResult;
 
-	if (!bHead)
-	{
-		pResult = pList->tail->pData;
-		pList->tail = pList->tail->pPrev;
-		pList->tail->pNext = NULL;
-	}
-	else
-	{
-		pResult = pList->head->pData;
-		pList->head = pList->head->pNext;
-		pList->head->pPrev = NULL;
-	}
+    if (pList->nMembers == 0)
+        return (NULL);
 
-	pList->nMembers -= 1;
+    if (!bHead) {
+        pResult = pList->tail->pData;
+        pList->tail = pList->tail->pPrev;
+        pList->tail->pNext = NULL;
+    } else {
+        pResult = pList->head->pData;
+        pList->head = pList->head->pNext;
+        pList->head->pPrev = NULL;
+    }
 
-	return(pResult);
+    pList->nMembers -= 1;
+
+    return (pResult);
 }
 
 /*
@@ -200,16 +183,15 @@ removeItem(list_t *pList, int bHead)
 * TODO: None
 */
 void *
-getHead(list_t *pList)
-{
-	assert(pList);
+getHead(list_t *pList) {
+    assert(pList);
 
-	if (!pList->head)
-		return(NULL);
+    if (!pList->head)
+        return (NULL);
 
-	pList->pCurrent = pList->head;
+    pList->pCurrent = pList->head;
 
-	return(pList->pCurrent->pData);
+    return (pList->pCurrent->pData);
 }
 
 /*
@@ -227,16 +209,15 @@ getHead(list_t *pList)
 * TODO: None
 */
 void *
-getTail(list_t *pList)
-{
-	assert(pList);
+getTail(list_t *pList) {
+    assert(pList);
 
-	if (!pList->tail)
-		return(NULL);
+    if (!pList->tail)
+        return (NULL);
 
-	pList->pCurrent = pList->tail;
+    pList->pCurrent = pList->tail;
 
-	return(pList->pCurrent->pData);
+    return (pList->pCurrent->pData);
 }
 
 /*
@@ -254,16 +235,15 @@ getTail(list_t *pList)
 * TODO: None
 */
 void *
-getNext(list_t *pList)
-{
-	assert(pList);
+getNext(list_t *pList) {
+    assert(pList);
 
-	if (!pList->pCurrent->pNext)
-		return(NULL);
+    if (!pList->pCurrent->pNext)
+        return (NULL);
 
-	pList->pCurrent = pList->pCurrent->pNext;
+    pList->pCurrent = pList->pCurrent->pNext;
 
-	return(pList->pCurrent->pData);
+    return (pList->pCurrent->pData);
 }
 
 /*
@@ -281,20 +261,18 @@ getNext(list_t *pList)
 * TODO: None
 */
 void *
-findList(list_t *pList, void *pData)
-{
-	void *pNode;
-	struct LIST_NODE_T *pOldCurrent = pList->pCurrent;
-	
-	for (pNode = getHead(pList); pNode; pNode = getNext(pList))
-		if (pList->pSortFunc(pNode, pData) == 0)
-		{
-			pList->pCurrent = pOldCurrent;
-			return(pNode);
-		}
+findList(list_t *pList, void *pData) {
+    void *pNode;
+    struct LIST_NODE_T *pOldCurrent = pList->pCurrent;
 
-		pList->pCurrent = pOldCurrent;
-		return(NULL);
+    for (pNode = getHead(pList); pNode; pNode = getNext(pList))
+        if (pList->pSortFunc(pNode, pData) == 0) {
+            pList->pCurrent = pOldCurrent;
+            return (pNode);
+        }
+
+    pList->pCurrent = pOldCurrent;
+    return (NULL);
 }
 
 /*
@@ -312,18 +290,17 @@ findList(list_t *pList, void *pData)
 * TODO: None
 */
 void *
-getItem(list_t *pList, int nIndex)
-{
-	void *pResult;
-	struct LIST_NODE_T *pOldCurrent = pList->pCurrent;
-	
-	if (nIndex > length(pList))
-		return(NULL);
+getItem(list_t *pList, int nIndex) {
+    void *pResult;
+    struct LIST_NODE_T *pOldCurrent = pList->pCurrent;
+
+    if (nIndex > length(pList))
+        return (NULL);
 
 
-	for (pResult = getHead(pList); --nIndex; pResult = getNext(pList));
+    for (pResult = getHead(pList); --nIndex; pResult = getNext(pList));
 
-	pList->pCurrent = pOldCurrent;
-	return(pResult);
+    pList->pCurrent = pOldCurrent;
+    return (pResult);
 }
 

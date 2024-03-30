@@ -32,15 +32,17 @@
  * 
  * Contributors:
  * Gradient Systems
- */ 
+ */
 #include "config.h"
 #include "porting.h"
 #include <stdio.h>
 #include <stdlib.h>
+
 #ifdef WIN32
 #include <search.h>
 #include <limits.h>
 #endif
+
 #include "config.h"
 #include "porting.h"
 #include "decimal.h"
@@ -57,7 +59,7 @@
 static long Mult = 16807;       /* the multiplier */
 static long nQ = 127773;        /* the quotient MAXINT / Mult */
 static long nR = 2836;          /* the remainder MAXINT % Mult */
-void NthElement (HUGE_TYPE N, int nStream);
+void NthElement(HUGE_TYPE N, int nStream);
 
 /*
  * Routine: next_random(int stream)
@@ -74,23 +76,22 @@ void NthElement (HUGE_TYPE N, int nStream);
  * TODO: None
  */
 long
-next_random (int stream)
-{
-   long s = Streams[stream].nSeed,
-     div_res,
-     mod_res;
+next_random(int stream) {
+    long s = Streams[stream].nSeed,
+            div_res,
+            mod_res;
 
-   div_res = s / nQ;
-   mod_res = s - nQ * div_res;  /* i.e., mod_res = s % nQ */
-   s = Mult * mod_res - div_res * nR;
-   if (s < 0)
-      s += MAXINT;
-   Streams[stream].nSeed = s;
-   Streams[stream].nUsed += 1;
+    div_res = s / nQ;
+    mod_res = s - nQ * div_res;  /* i.e., mod_res = s % nQ */
+    s = Mult * mod_res - div_res * nR;
+    if (s < 0)
+        s += MAXINT;
+    Streams[stream].nSeed = s;
+    Streams[stream].nUsed += 1;
 #ifdef JMS
-   Streams[stream].nTotal += 1;
+    Streams[stream].nTotal += 1;
 #endif
-   return (s);
+    return (s);
 }
 
 /*
@@ -108,13 +109,12 @@ next_random (int stream)
  * TODO: None
  */
 double
-next_random_float (int stream)
-{
-   long res;
+next_random_float(int stream) {
+    long res;
 
-   res = next_random (stream);
+    res = next_random(stream);
 
-   return ((double) res / (double) MAXINT);
+    return ((double) res / (double) MAXINT);
 }
 
 /*
@@ -132,27 +132,25 @@ next_random_float (int stream)
  * TODO: None
  */
 void
-skip_random (int nStream, ds_key_t N)
-{
-   ds_key_t Z;
-   ds_key_t M;
+skip_random(int nStream, ds_key_t N) {
+    ds_key_t Z;
+    ds_key_t M;
 
 #ifdef UNDEF
-	fprintf(stderr, "skipping stream %d to %d\n", nStream, N);
+    fprintf(stderr, "skipping stream %d to %d\n", nStream, N);
    Streams[nStream].nTotal = N;
 #endif
-   M = Mult;
-   Z = (ds_key_t) Streams[nStream].nInitialSeed;
-   while (N > 0)
-     {
+    M = Mult;
+    Z = (ds_key_t) Streams[nStream].nInitialSeed;
+    while (N > 0) {
         if (N % 2 != 0)         /* testing for oddness, this seems portable */
-           Z = (M * Z) % MAXINT;
+            Z = (M * Z) % MAXINT;
         N = N / 2;              /* integer division, truncates */
         M = (M * M) % MAXINT;
-     }
-   Streams[nStream].nSeed = (long) Z;
+    }
+    Streams[nStream].nSeed = (long) Z;
 
-   return;
+    return;
 }
 
 /*
@@ -169,35 +167,32 @@ skip_random (int nStream, ds_key_t N)
  * Side Effects:
  */
 int
-genrand_integer_org (int *dest, int dist, int min, int max, int mean, int stream)
-{
-   int res = 0,
-     i;
-   double fres = 0;
+genrand_integer_org(int *dest, int dist, int min, int max, int mean, int stream) {
+    int res = 0,
+            i;
+    double fres = 0;
 
-   switch (dist)
-     {
-     case DIST_UNIFORM:
-        res = next_random (stream);
-        res %= max - min + 1;
-        res += min;
-        break;
-     case DIST_EXPONENTIAL:
-        for (i = 0; i < 12; i++)
-           fres += (double) (next_random (stream) / MAXINT) - 0.5;
-        res = min + (int) ((max - min + 1) * fres);
-        break;
-     default:
-        INTERNAL ("Undefined distribution");
-        break;
-     }
+    switch (dist) {
+        case DIST_UNIFORM:
+            res = next_random(stream);
+            res %= max - min + 1;
+            res += min;
+            break;
+        case DIST_EXPONENTIAL:
+            for (i = 0; i < 12; i++)
+                fres += (double) (next_random(stream) / MAXINT) - 0.5;
+            res = min + (int) ((max - min + 1) * fres);
+            break;
+        default: INTERNAL ("Undefined distribution");
+            break;
+    }
 
-   if (dest == NULL)
-      return (res);
+    if (dest == NULL)
+        return (res);
 
-   *dest = res;
+    *dest = res;
 
-   return (0);
+    return (0);
 }
 
 /*
@@ -215,36 +210,33 @@ genrand_integer_org (int *dest, int dist, int min, int max, int mean, int stream
  * TODO: Need to rework to rely on RNG routines that will work for 64 bit return values
  */
 ds_key_t
-genrand_key (ds_key_t * dest, int dist, ds_key_t min, ds_key_t max,
-             ds_key_t mean, int stream)
-{
-   int res = 0,
-     i;
-   double fres = 0;
+genrand_key(ds_key_t *dest, int dist, ds_key_t min, ds_key_t max,
+            ds_key_t mean, int stream) {
+    int res = 0,
+            i;
+    double fres = 0;
 
-   switch (dist)
-     {
-     case DIST_UNIFORM:
-        res = next_random (stream);
-        res %= (int) (max - min + 1);
-        res += (int) min;
-        break;
-     case DIST_EXPONENTIAL:
-        for (i = 0; i < 12; i++)
-           fres += (double) (next_random (stream) / MAXINT) - 0.5;
-        res = (int) min + (int) ((max - min + 1) * fres);
-        break;
-     default:
-        INTERNAL ("Undefined distribution");
-        break;
-     }
+    switch (dist) {
+        case DIST_UNIFORM:
+            res = next_random(stream);
+            res %= (int) (max - min + 1);
+            res += (int) min;
+            break;
+        case DIST_EXPONENTIAL:
+            for (i = 0; i < 12; i++)
+                fres += (double) (next_random(stream) / MAXINT) - 0.5;
+            res = (int) min + (int) ((max - min + 1) * fres);
+            break;
+        default: INTERNAL ("Undefined distribution");
+            break;
+    }
 
-   if (dest == NULL)
-      return ((ds_key_t) res);
+    if (dest == NULL)
+        return ((ds_key_t) res);
 
-   *dest = (ds_key_t) res;
+    *dest = (ds_key_t) res;
 
-   return ((ds_key_t) 0);
+    return ((ds_key_t) 0);
 }
 
 /*
@@ -263,52 +255,47 @@ genrand_key (ds_key_t * dest, int dist, ds_key_t min, ds_key_t max,
  * TODO: None
  */
 int
-genrand_decimal_org (decimal_t * dest, int dist, decimal_t * min, decimal_t * max,
-                 decimal_t * mean, int stream)
-{
-   int i;
-   decimal_t res;
-   double fres = 0.0;
+genrand_decimal_org(decimal_t *dest, int dist, decimal_t *min, decimal_t *max,
+                    decimal_t *mean, int stream) {
+    int i;
+    decimal_t res;
+    double fres = 0.0;
 
-   if (min->precision < max->precision)
-      dest->precision = min->precision;
-   else
-      dest->precision = max->precision;
+    if (min->precision < max->precision)
+        dest->precision = min->precision;
+    else
+        dest->precision = max->precision;
 
 
-   switch (dist)
-     {
-     case DIST_UNIFORM:
-        res.number = next_random (stream);
-        res.number %= max->number - min->number + 1;
-        res.number += min->number;
-        break;
-     case DIST_EXPONENTIAL:
-        for (i = 0; i < 12; i++)
-          {
-             fres /= 2.0;
-             fres +=
-                (double) ((double) next_random (stream) / (double) MAXINT) -
-                0.5;
-          }
-        res.number =
-           mean->number + (int) ((max->number - min->number + 1) * fres);
-        break;
-     default:
-        INTERNAL ("Undefined distribution");
-        break;
-     }
+    switch (dist) {
+        case DIST_UNIFORM:
+            res.number = next_random(stream);
+            res.number %= max->number - min->number + 1;
+            res.number += min->number;
+            break;
+        case DIST_EXPONENTIAL:
+            for (i = 0; i < 12; i++) {
+                fres /= 2.0;
+                fres +=
+                        (double) ((double) next_random(stream) / (double) MAXINT) -
+                        0.5;
+            }
+            res.number =
+                    mean->number + (int) ((max->number - min->number + 1) * fres);
+            break;
+        default: INTERNAL ("Undefined distribution");
+            break;
+    }
 
-   dest->number = res.number;
-   i = 0;
-   while (res.number > 10)
-     {
+    dest->number = res.number;
+    i = 0;
+    while (res.number > 10) {
         res.number /= 10;
         i += 1;
-     }
-   dest->scale = i;
+    }
+    dest->scale = i;
 
-   return (0);
+    return (0);
 }
 
 
@@ -326,15 +313,14 @@ genrand_decimal_org (decimal_t * dest, int dist, decimal_t * min, decimal_t * ma
  * TODO: None
  */
 int
-RNGReset (int tbl)
-{
-   int i;
+RNGReset(int tbl) {
+    int i;
 
-   for (i = 0; Streams[i].nColumn != -1; i++)
-      if (Streams[i].nTable == tbl)
-         Streams[i].nSeed = Streams[i].nInitialSeed;
+    for (i = 0; Streams[i].nColumn != -1; i++)
+        if (Streams[i].nTable == tbl)
+            Streams[i].nSeed = Streams[i].nInitialSeed;
 
-   return (0);
+    return (0);
 }
 
 
@@ -371,31 +357,29 @@ static HUGE_TYPE Modulus = 2147483647;  /* trick you use to get 64 bit int */
 
 /* Nth Element of sequence starting with StartSeed */
 void
-NthElement (HUGE_TYPE N, int nStream)
-{
-   HUGE_TYPE Z;
-   HUGE_TYPE Mult;
+NthElement(HUGE_TYPE N, int nStream) {
+    HUGE_TYPE Z;
+    HUGE_TYPE Mult;
 
-   Mult = Multiplier;
-   Z = (HUGE_TYPE) Streams[nStream].nInitialSeed;
-   while (N > 0)
-     {
+    Mult = Multiplier;
+    Z = (HUGE_TYPE) Streams[nStream].nInitialSeed;
+    while (N > 0) {
         if (N % 2 != 0)         /* testing for oddness, this seems portable */
-          {
+        {
 #ifdef JMS
-             Streams[nStream].nTotal += 1;
+            Streams[nStream].nTotal += 1;
 #endif
-             Z = (Mult * Z) % Modulus;
-          }
+            Z = (Mult * Z) % Modulus;
+        }
         N = N / 2;              /* integer division, truncates */
         Mult = (Mult * Mult) % Modulus;
 #ifdef JMS
         Streams[nStream].nTotal += 2;
 #endif
-     }
-   Streams[nStream].nSeed = (long) Z;
+    }
+    Streams[nStream].nSeed = (long) Z;
 
-   return;
+    return;
 }
 
 /*
@@ -413,14 +397,13 @@ NthElement (HUGE_TYPE N, int nStream)
  * TODO: None
  */
 int
-dump_seeds (int tbl)
-{
-   int i;
+dump_seeds(int tbl) {
+    int i;
 
-   for (i = 0; Streams[i].nColumn != -1; i++)
-      if (Streams[i].nTable == tbl)
-         printf ("%04d\t%09d\t%09ld\n", i, Streams[i].nUsed, Streams[i].nSeed);
-   return (0);
+    for (i = 0; Streams[i].nColumn != -1; i++)
+        if (Streams[i].nTable == tbl)
+            printf("%04d\t%09d\t%09ld\n", i, Streams[i].nUsed, Streams[i].nSeed);
+    return (0);
 }
 
 /*
@@ -438,29 +421,26 @@ dump_seeds (int tbl)
  * TODO: None
  */
 int
-gen_charset (char *dest, char *set, int min, int max, int stream)
-{
-   int len,
-     i,
-     temp;
+gen_charset(char *dest, char *set, int min, int max, int stream) {
+    int len,
+            i,
+            temp;
 
-   if (set == NULL)
-     {
+    if (set == NULL) {
         dest = NULL;
         return (-1);
-     }
+    }
 
-   genrand_integer (&len, DIST_UNIFORM, min, max, 0, stream);
+    genrand_integer(&len, DIST_UNIFORM, min, max, 0, stream);
 
-   for (i = 0; i < max; i++)
-     {
-        genrand_integer (&temp, DIST_UNIFORM, 0, strlen (set) - 1, 0, stream);
+    for (i = 0; i < max; i++) {
+        genrand_integer(&temp, DIST_UNIFORM, 0, strlen(set) - 1, 0, stream);
         if (i < len)
-			dest[i] = *(set + temp);
-     }
-   dest[len] = '\0';
+            dest[i] = *(set + temp);
+    }
+    dest[len] = '\0';
 
-   return (0);
+    return (0);
 
 }
 
@@ -479,75 +459,68 @@ gen_charset (char *dest, char *set, int min, int max, int stream)
  * TODO: None
  */
 int
-genrand_date (date_t * dest, int dist, date_t * min, date_t * max,
-              date_t * mean, int stream)
-{
-   int range,
-     imean = 0,
-     temp,
-     idt,
-     nYear,
-     nTotalWeight = 0,
-     nDayCount;
+genrand_date(date_t *dest, int dist, date_t *min, date_t *max,
+             date_t *mean, int stream) {
+    int range,
+            imean = 0,
+            temp,
+            idt,
+            nYear,
+            nTotalWeight = 0,
+            nDayCount;
 
-   idt = dttoj (min);
-   range = dttoj (max);
-   range -= idt;
-   nDayCount = min->day;
-   nYear = min->year;
+    idt = dttoj(min);
+    range = dttoj(max);
+    range -= idt;
+    nDayCount = min->day;
+    nYear = min->year;
 
-   switch (dist)
-     {
-     case DIST_SALES:
-     case DIST_RETURNS:
-        /* walk from min to max to "integrate" the distribution */
-        while (range -= 1)
-          {
-             nTotalWeight +=
-                dist_weight (NULL, "calendar", nDayCount,
-                             dist + is_leap (nYear));
-             if (nDayCount == 365 + is_leap (nYear))
-               {
-                  nYear += 1;
-                  nDayCount = 1;
-               }
-             else
+    switch (dist) {
+        case DIST_SALES:
+        case DIST_RETURNS:
+            /* walk from min to max to "integrate" the distribution */
+            while (range -= 1) {
+                nTotalWeight +=
+                        dist_weight(NULL, "calendar", nDayCount,
+                                    dist + is_leap(nYear));
+                if (nDayCount == 365 + is_leap(nYear)) {
+                    nYear += 1;
+                    nDayCount = 1;
+                } else
+                    nDayCount += 1;
+            }
+            /* pick a value in the resulting range */
+            temp = genrand_integer(NULL, DIST_UNIFORM, 1, nTotalWeight, 0, stream);
+            /* and walk it again to translate that back to a date */
+            nDayCount = min->day;
+            idt = min->julian;
+            nYear = min->year;
+            while (temp >= 0) {
+                temp -=
+                        dist_weight(NULL, "calendar", nDayCount,
+                                    dist + is_leap(nYear));
                 nDayCount += 1;
-          }
-        /* pick a value in the resulting range */
-        temp = genrand_integer (NULL, DIST_UNIFORM, 1, nTotalWeight, 0, stream);
-        /* and walk it again to translate that back to a date */
-        nDayCount = min->day;
-        idt = min->julian;
-        nYear = min->year;
-        while (temp >= 0)
-          {
-             temp -=
-                dist_weight (NULL, "calendar", nDayCount,
-                             dist + is_leap (nYear));
-             nDayCount += 1;
-             idt += 1;
-             if (nDayCount > 365 + is_leap (nYear))
-               {
-                  nYear += 1;
-                  nDayCount = 1;
-               }
-          }
-        break;
-     case DIST_EXPONENTIAL:
-        imean = dttoj (mean);
-        imean -= idt;
-     case DIST_UNIFORM:
-        genrand_integer (&temp, dist, 0, range, imean, stream);
-        idt += temp;
-        break;
-     default:
-        break;
-     }
+                idt += 1;
+                if (nDayCount > 365 + is_leap(nYear)) {
+                    nYear += 1;
+                    nDayCount = 1;
+                }
+            }
+            break;
+        case DIST_EXPONENTIAL:
+            imean = dttoj(mean);
+            imean -= idt;
+        case DIST_UNIFORM:
+            genrand_integer(&temp, dist, 0, range, imean, stream);
+            idt += temp;
+            break;
+        default:
+            break;
+    }
 
-   jtodt (dest, idt);
+    jtodt(dest, idt);
 
-   return (0);
+    return (0);
 
 }
 
@@ -575,71 +548,36 @@ genrand_date (date_t * dest, int dist, date_t * min, date_t * max,
  * TODO: 
  */
 void
-init_rand (void)
-{
-   static int bInit = 0;
-   int i,
-	skip,
-	nSeed;
+init_rand(void) {
+    static int bInit = 0;
+    int i,
+            skip,
+            nSeed;
 
-   if (!bInit)
-     {
-	   if (is_set("RNGSEED"))
-		   nSeed =  get_int("RNGSEED");
-	   else
-		   nSeed = RNG_SEED;
+    if (!bInit) {
+        if (is_set("RNGSEED"))
+            nSeed = get_int("RNGSEED");
+        else
+            nSeed = RNG_SEED;
         skip = MAXINT / MAX_COLUMN;
-        for (i = 0; i < MAX_COLUMN; i++)
-          {
-             Streams[i].nInitialSeed = nSeed + skip * i;
-             Streams[i].nSeed = nSeed + skip * i;
-             Streams[i].nUsed = 0;
-          }
+        for (i = 0; i < MAX_COLUMN; i++) {
+            Streams[i].nInitialSeed = nSeed + skip * i;
+            Streams[i].nSeed = nSeed + skip * i;
+            Streams[i].nUsed = 0;
+        }
         bInit = 1;
-     }
-   return;
+    }
+    return;
 }
 
 void
-resetSeeds(int nTable)
-{
-	int i;
-	
-	for (i = 0; i < MAX_COLUMN; i++)
-		if (Streams[i].nTable == nTable)
-			Streams[i].nSeed = Streams[i].nInitialSeed;
-	return;
-}
+resetSeeds(int nTable) {
+    int i;
 
-/*
-* Routine: 
-* Purpose: 
-* Algorithm:
-* Data Structures:
-*
-* Params:
-* Returns:
-* Called By: 
-* Calls: 
-* Assumptions:
-* Side Effects:
-* TODO: None
-*/
-void
-genrand_email (char *pEmail, char *pFirst, char *pLast, int nColumn)
-{
-   char *pDomain;
-   char szCompany[50];
-   int nCompanyLength;
-
-   pick_distribution (&pDomain, "top_domains", 1, 1, nColumn);
-   genrand_integer(&nCompanyLength, DIST_UNIFORM, 10, 20, 0, nColumn);
-   gen_charset (&szCompany[0], ALPHANUM, 1, 20, nColumn);
-   szCompany[nCompanyLength] = '\0';
-
-   sprintf (pEmail, "%s.%s@%s.%s", pFirst, pLast, szCompany, pDomain);
-
-   return;
+    for (i = 0; i < MAX_COLUMN; i++)
+        if (Streams[i].nTable == nTable)
+            Streams[i].nSeed = Streams[i].nInitialSeed;
+    return;
 }
 
 /*
@@ -657,17 +595,46 @@ genrand_email (char *pEmail, char *pFirst, char *pLast, int nColumn)
 * TODO: None
 */
 void
-genrand_ipaddr (char *pDest, int nColumn)
-{
-   int arQuads[4],
-     i;
+genrand_email(char *pEmail, char *pFirst, char *pLast, int nColumn) {
+    char *pDomain;
+    char szCompany[50];
+    int nCompanyLength;
 
-   for (i = 0; i < 4; i++)
-      genrand_integer (&arQuads[i], DIST_UNIFORM, 1, 255, 0, nColumn);
-   sprintf (pDest, "%03d.%03d.%03d.%03d",
+    pick_distribution (&pDomain, "top_domains", 1, 1, nColumn);
+    genrand_integer(&nCompanyLength, DIST_UNIFORM, 10, 20, 0, nColumn);
+    gen_charset(&szCompany[0], ALPHANUM, 1, 20, nColumn);
+    szCompany[nCompanyLength] = '\0';
+
+    sprintf(pEmail, "%s.%s@%s.%s", pFirst, pLast, szCompany, pDomain);
+
+    return;
+}
+
+/*
+* Routine: 
+* Purpose: 
+* Algorithm:
+* Data Structures:
+*
+* Params:
+* Returns:
+* Called By: 
+* Calls: 
+* Assumptions:
+* Side Effects:
+* TODO: None
+*/
+void
+genrand_ipaddr(char *pDest, int nColumn) {
+    int arQuads[4],
+            i;
+
+    for (i = 0; i < 4; i++)
+        genrand_integer(&arQuads[i], DIST_UNIFORM, 1, 255, 0, nColumn);
+    sprintf(pDest, "%03d.%03d.%03d.%03d",
             arQuads[0], arQuads[1], arQuads[2], arQuads[3]);
 
-   return;
+    return;
 }
 
 /*
@@ -685,11 +652,10 @@ genrand_ipaddr (char *pDest, int nColumn)
 * TODO: None
 */
 int
-genrand_url (char *pDest, int nColumn)
-{
-   strcpy (pDest, "http://www.foo.com");
+genrand_url(char *pDest, int nColumn) {
+    strcpy(pDest, "http://www.foo.com");
 
-   return (0);
+    return (0);
 }
 
 /*
@@ -707,14 +673,13 @@ genrand_url (char *pDest, int nColumn)
 * TODO: None
 */
 int
-setSeed(int nStream, int nValue)
-{
-	int nRetValue;
+setSeed(int nStream, int nValue) {
+    int nRetValue;
 
-	nRetValue = Streams[nStream].nSeed;
-	Streams[nStream].nSeed = nValue;
+    nRetValue = Streams[nStream].nSeed;
+    Streams[nStream].nSeed = nValue;
 
-	return(nRetValue);
+    return (nRetValue);
 }
 
 

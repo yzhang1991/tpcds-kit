@@ -32,7 +32,7 @@
  * 
  * Contributors:
  * Gradient Systems
- */ 
+ */
 #include "config.h"
 #include "porting.h"
 #include "scaling.h"
@@ -56,28 +56,27 @@
 * TODO: None
 */
 int
-initSparseKeys(int nTable)
-{
-	ds_key_t kRowcount,
-		kOldSeed;
-	int k;
-	tdef *pTdef;
+initSparseKeys(int nTable) {
+    ds_key_t kRowcount,
+            kOldSeed;
+    int k;
+    tdef *pTdef;
 
-	kRowcount = get_rowcount(nTable);
-	pTdef = getTdefsByNumber(nTable);
-	
-	pTdef->arSparseKeys = (ds_key_t *)malloc((long)kRowcount * sizeof(ds_key_t));
-	MALLOC_CHECK(pTdef->arSparseKeys);
-	if (pTdef->arSparseKeys == NULL)
-		ReportError(QERR_NO_MEMORY, "initSparseKeys()", 1);
-	memset(pTdef->arSparseKeys, 0, (long)kRowcount * sizeof(ds_key_t));
+    kRowcount = get_rowcount(nTable);
+    pTdef = getTdefsByNumber(nTable);
 
-	kOldSeed = setSeed(0, nTable);
-	for (k = 0; k < kRowcount; k++)
-		 genrand_key(&pTdef->arSparseKeys[k], DIST_UNIFORM, 1, pTdef->nParam, 0, 0);
-	setSeed(0, (int)kOldSeed);
+    pTdef->arSparseKeys = (ds_key_t *) malloc((long) kRowcount * sizeof(ds_key_t));
+    MALLOC_CHECK(pTdef->arSparseKeys);
+    if (pTdef->arSparseKeys == NULL)
+        ReportError(QERR_NO_MEMORY, "initSparseKeys()", 1);
+    memset(pTdef->arSparseKeys, 0, (long) kRowcount * sizeof(ds_key_t));
 
-	return(0);
+    kOldSeed = setSeed(0, nTable);
+    for (k = 0; k < kRowcount; k++)
+        genrand_key(&pTdef->arSparseKeys[k], DIST_UNIFORM, 1, pTdef->nParam, 0, 0);
+    setSeed(0, (int) kOldSeed);
+
+    return (0);
 }
 
 /*
@@ -95,17 +94,16 @@ initSparseKeys(int nTable)
 * TODO: None
 */
 ds_key_t
-randomSparseKey(int nTable, int nColumn)
-{
-	int nKeyIndex;
-	ds_key_t kRowcount;
-	tdef *pTdef;
+randomSparseKey(int nTable, int nColumn) {
+    int nKeyIndex;
+    ds_key_t kRowcount;
+    tdef *pTdef;
 
-	pTdef = getTdefsByNumber(nTable);
-	kRowcount = get_rowcount(nTable);
-	genrand_integer(&nKeyIndex, DIST_UNIFORM, 1, (long)kRowcount, 0, nColumn);
+    pTdef = getTdefsByNumber(nTable);
+    kRowcount = get_rowcount(nTable);
+    genrand_integer(&nKeyIndex, DIST_UNIFORM, 1, (long) kRowcount, 0, nColumn);
 
-	return(pTdef->arSparseKeys[nKeyIndex]);
+    return (pTdef->arSparseKeys[nKeyIndex]);
 }
 
 

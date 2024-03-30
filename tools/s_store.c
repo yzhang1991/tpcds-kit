@@ -32,7 +32,7 @@
  * 
  * Contributors:
  * Gradient Systems
- */ 
+ */
 #include "config.h"
 #include "porting.h"
 #include <stdio.h>
@@ -66,25 +66,24 @@ extern struct W_STORE_TBL g_w_store;
 * TODO: None
 */
 int
-mk_s_store (void* row, ds_key_t index)
-{
-   static int bInit = 0;
-   static int *pPermutation;
-   ds_key_t kIndex;
+mk_s_store(void *row, ds_key_t index) {
+    static int bInit = 0;
+    static int *pPermutation;
+    ds_key_t kIndex;
 
-   if (!bInit)
-   {
-      pPermutation = makePermutation(NULL, (int)getIDCount(STORE), S_STORE_ID);
-      bInit = 1;
-   }
+    if (!bInit) {
+        pPermutation = makePermutation(NULL, (int) getIDCount(STORE), S_STORE_ID);
+        bInit = 1;
+    }
 
-   kIndex = getPermutationEntry(pPermutation, (int)index);
-   mk_w_store(NULL,getSKFromID(kIndex, S_STORE_ID));
-   if (!g_w_store.closed_date_id)
-      g_w_store.closed_date_id = -1; /* dates use a special NULL indicator */
+    kIndex = getPermutationEntry(pPermutation, (int) index);
+    mk_w_store(NULL, getSKFromID(kIndex, S_STORE_ID));
+    if (!g_w_store.closed_date_id)
+        g_w_store.closed_date_id = -1; /* dates use a special NULL indicator */
 
-   return(0);
+    return (0);
 }
+
 /*
 * Routine: 
 * Purpose: 
@@ -100,30 +99,29 @@ mk_s_store (void* row, ds_key_t index)
 * TODO: None
 */
 int
-pr_s_store(void *pSrc)
-{
-	struct W_STORE_TBL *r;
-   
-   if (pSrc == NULL)
-		r = &g_w_store;
-	else
-		r = pSrc;
-	
-	print_start(S_STORE);
-	print_varchar(W_STORE_ID, r->store_id, 1);
-	print_date(W_STORE_CLOSED_DATE_ID, r->closed_date_id, 1);
-	print_varchar(W_STORE_NAME, r->store_name, 1);
-	print_integer(W_STORE_EMPLOYEES, r->employees, 1);
-	print_integer(W_STORE_FLOOR_SPACE, r->floor_space, 1);
-	print_varchar(W_STORE_HOURS, r->hours, 1);
-	print_varchar(W_STORE_MANAGER, &r->store_manager[0], 1);
-	print_integer(W_STORE_MARKET_ID, r->market_id, 1);
-	print_varchar(W_STORE_GEOGRAPHY_CLASS, r->geography_class, 1);
-	print_varchar(W_STORE_MARKET_MANAGER, &r->market_manager[0], 1);
-   print_decimal(W_STORE_TAX_PERCENTAGE,&r->dTaxPercentage, 0);
-	print_end(S_STORE);
-	
-	return(0);
+pr_s_store(void *pSrc) {
+    struct W_STORE_TBL *r;
+
+    if (pSrc == NULL)
+        r = &g_w_store;
+    else
+        r = pSrc;
+
+    print_start(S_STORE);
+    print_varchar(W_STORE_ID, r->store_id, 1);
+    print_date(W_STORE_CLOSED_DATE_ID, r->closed_date_id, 1);
+    print_varchar(W_STORE_NAME, r->store_name, 1);
+    print_integer(W_STORE_EMPLOYEES, r->employees, 1);
+    print_integer(W_STORE_FLOOR_SPACE, r->floor_space, 1);
+    print_varchar(W_STORE_HOURS, r->hours, 1);
+    print_varchar(W_STORE_MANAGER, &r->store_manager[0], 1);
+    print_integer(W_STORE_MARKET_ID, r->market_id, 1);
+    print_varchar(W_STORE_GEOGRAPHY_CLASS, r->geography_class, 1);
+    print_varchar(W_STORE_MARKET_MANAGER, &r->market_manager[0], 1);
+    print_decimal(W_STORE_TAX_PERCENTAGE, &r->dTaxPercentage, 0);
+    print_end(S_STORE);
+
+    return (0);
 }
 
 /*
@@ -140,16 +138,15 @@ pr_s_store(void *pSrc)
 * Side Effects:
 * TODO: None
 */
-int 
-ld_s_store(void *pSrc)
-{
-	struct W_STORE_TBL *r;
-		
-	if (pSrc == NULL)
-		r = &g_w_store;
-	else
-		r = pSrc;
-	
-	return(0);
+int
+ld_s_store(void *pSrc) {
+    struct W_STORE_TBL *r;
+
+    if (pSrc == NULL)
+        r = &g_w_store;
+    else
+        r = pSrc;
+
+    return (0);
 }
 

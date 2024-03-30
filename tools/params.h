@@ -32,11 +32,13 @@
  * 
  * Contributors:
  * Gradient Systems
- */ 
+ */
 #ifndef QGEN_PARAMS_H
 #define QGEN_PARAMS_H
+
 #include "r_params.h"
 #include "release.h"
+
 #ifdef DECLARER
 
 option_t options[] =

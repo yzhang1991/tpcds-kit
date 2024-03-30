@@ -32,48 +32,53 @@
  * 
  * Contributors:
  * Gradient Systems
- */ 
+ */
 #ifndef W_ITEM_H
 #define W_ITEM_H
+
 #include "constants.h"
 
-#define I_PROMO_PERCENTAGE	20	/* percent of items that have associated promotions */
-#define MIN_ITEM_MARKDOWN_PCT		"0.30"
-#define MAX_ITEM_MARKDOWN_PCT		"0.90"
+#define I_PROMO_PERCENTAGE    20    /* percent of items that have associated promotions */
+#define MIN_ITEM_MARKDOWN_PCT        "0.30"
+#define MAX_ITEM_MARKDOWN_PCT        "0.90"
 
 /*
  * ITEM table structure 
  */
 struct W_ITEM_TBL {
-	ds_key_t	i_item_sk;
-	char		i_item_id[RS_BKEY + 1];
-	ds_key_t	i_rec_start_date_id;
-	ds_key_t	i_rec_end_date_id;
-	char		i_item_desc[RS_I_ITEM_DESC + 1];
-	decimal_t	i_current_price;	/* list price */
-	decimal_t	i_wholesale_cost;
-	ds_key_t	i_brand_id;
-	char		i_brand[RS_I_BRAND + 1];
-	ds_key_t	i_class_id;
-	char		*i_class;
-	ds_key_t	i_category_id;
-	char		*i_category;
-	ds_key_t	i_manufact_id;
-	char		i_manufact[RS_I_MANUFACT + 1];
-	char		*i_size;
-	char		i_formulation[RS_I_FORMULATION + 1];
-	char		*i_color;
-	char		*i_units;
-	char		*i_container;
-	ds_key_t	i_manager_id;
-	char		i_product_name[RS_I_PRODUCT_NAME + 1];
-	ds_key_t	i_promo_sk;
+    ds_key_t i_item_sk;
+    char i_item_id[RS_BKEY + 1];
+    ds_key_t i_rec_start_date_id;
+    ds_key_t i_rec_end_date_id;
+    char i_item_desc[RS_I_ITEM_DESC + 1];
+    decimal_t i_current_price;    /* list price */
+    decimal_t i_wholesale_cost;
+    ds_key_t i_brand_id;
+    char i_brand[RS_I_BRAND + 1];
+    ds_key_t i_class_id;
+    char *i_class;
+    ds_key_t i_category_id;
+    char *i_category;
+    ds_key_t i_manufact_id;
+    char i_manufact[RS_I_MANUFACT + 1];
+    char *i_size;
+    char i_formulation[RS_I_FORMULATION + 1];
+    char *i_color;
+    char *i_units;
+    char *i_container;
+    ds_key_t i_manager_id;
+    char i_product_name[RS_I_PRODUCT_NAME + 1];
+    ds_key_t i_promo_sk;
 };
 
 
 int mk_w_item(void *pDest, ds_key_t kIndex);
+
 int pr_w_item(void *pSrc);
+
 int ld_w_item(void *pSrc);
+
 int vld_w_item(int nTable, ds_key_t kRow, int *Permutation);
+
 #endif
 

@@ -32,12 +32,16 @@
  * 
  * Contributors:
  * Gradient Systems
- */ 
+ */
 #ifndef S_ITEM_H
 #define S_ITEM_H
 
 int mk_s_item(void *row, ds_key_t kIndex);
+
 int pr_s_item(void *pSrc);
+
 int ld_s_item(void *pSrc);
+
 int vld_s_item(int nTable, ds_key_t kIndex, int *Permutation);
+
 #endif

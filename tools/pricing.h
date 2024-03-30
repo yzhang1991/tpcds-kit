@@ -32,46 +32,47 @@
  * 
  * Contributors:
  * Gradient Systems
- */ 
+ */
 #ifndef PRICING_H
 #define PRICING_H
+
 #include "decimal.h"
 
 typedef struct DS_PRICING_T {
-	decimal_t wholesale_cost;
-	decimal_t list_price;
-	decimal_t sales_price;
-	int quantity;
-	decimal_t ext_discount_amt;
-	decimal_t ext_sales_price;
-	decimal_t ext_wholesale_cost;
-	decimal_t ext_list_price;
-	decimal_t tax_pct;
-	decimal_t ext_tax;
-	decimal_t coupon_amt;
-   decimal_t ship_cost;
-	decimal_t ext_ship_cost;
-	decimal_t net_paid;
-	decimal_t net_paid_inc_tax;
-	decimal_t net_paid_inc_ship;
-	decimal_t net_paid_inc_ship_tax;
-	decimal_t net_profit;
-	decimal_t refunded_cash;
-	decimal_t reversed_charge;
-	decimal_t store_credit;
-	decimal_t fee;
-	decimal_t net_loss;
+    decimal_t wholesale_cost;
+    decimal_t list_price;
+    decimal_t sales_price;
+    int quantity;
+    decimal_t ext_discount_amt;
+    decimal_t ext_sales_price;
+    decimal_t ext_wholesale_cost;
+    decimal_t ext_list_price;
+    decimal_t tax_pct;
+    decimal_t ext_tax;
+    decimal_t coupon_amt;
+    decimal_t ship_cost;
+    decimal_t ext_ship_cost;
+    decimal_t net_paid;
+    decimal_t net_paid_inc_tax;
+    decimal_t net_paid_inc_ship;
+    decimal_t net_paid_inc_ship_tax;
+    decimal_t net_profit;
+    decimal_t refunded_cash;
+    decimal_t reversed_charge;
+    decimal_t store_credit;
+    decimal_t fee;
+    decimal_t net_loss;
 } ds_pricing_t;
 
-typedef struct DS_LIMITS_T
-{
-	int nId;
-	char *szQuantity;
-	char *szMarkUp;
-	char *szDiscount;
-	char *szWholesale;
-	char *szCoupon;
+typedef struct DS_LIMITS_T {
+    int nId;
+    char *szQuantity;
+    char *szMarkUp;
+    char *szDiscount;
+    char *szWholesale;
+    char *szCoupon;
 } ds_limits_t;
 
 void set_pricing(int nTabId, ds_pricing_t *pPricing);
+
 #endif

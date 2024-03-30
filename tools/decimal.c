@@ -32,14 +32,18 @@
  * 
  * Contributors:
  * Gradient Systems
- */ 
+ */
 
 /*** includes ***/
 #include "config.h"
 #include "porting.h"
+
 #ifndef USE_STDLIB_H
+
 #include <malloc.h>
+
 #endif
+
 #include <stdio.h>
 #include "decimal.h"
 #include "mathops.h"
@@ -60,14 +64,13 @@
  * TODO: None
  */
 void
-set_precision(decimal_t *dest, int scale, int precision)
-{
-	dest->scale = scale;
-	dest->precision = precision;
-	dest->number = 0;
-	dest->flags = 0;
+set_precision(decimal_t *dest, int scale, int precision) {
+    dest->scale = scale;
+    dest->precision = precision;
+    dest->number = 0;
+    dest->flags = 0;
 
-	return;
+    return;
 }
 
 /*
@@ -86,22 +89,21 @@ set_precision(decimal_t *dest, int scale, int precision)
  * TODO: None
  */
 decimal_t *
-mk_decimal(int s, int p)
-{
-	decimal_t *res;
+mk_decimal(int s, int p) {
+    decimal_t *res;
 
-	if ((s < 0) || (p < 0))
-		return(NULL);
-	
-	res = (decimal_t *)malloc(sizeof(struct DECIMAL_T));
-	MALLOC_CHECK(res);
+    if ((s < 0) || (p < 0))
+        return (NULL);
 
-	res->flags = 0;
-	res->scale = s;
-	res->precision = p;
-	res->flags |= FL_INIT;
+    res = (decimal_t *) malloc(sizeof(struct DECIMAL_T));
+    MALLOC_CHECK(res);
 
-	return(res);
+    res->flags = 0;
+    res->scale = s;
+    res->precision = p;
+    res->flags |= FL_INIT;
+
+    return (res);
 }
 
 /*
@@ -120,22 +122,20 @@ mk_decimal(int s, int p)
  * 20000104 need to set errno on error
  */
 int
-itodec(decimal_t *dest, int src)
-{
-	int scale = 1,
-		bound = 1;
-	
-	while ((bound * 10) <= src)
-		{
-		scale += 1;
-		bound *= 10;
-		}
+itodec(decimal_t *dest, int src) {
+    int scale = 1,
+            bound = 1;
 
-	dest->precision = 0;
-	dest->scale = scale;
-	dest->number = src;
+    while ((bound * 10) <= src) {
+        scale += 1;
+        bound *= 10;
+    }
 
-	return(0);
+    dest->precision = 0;
+    dest->scale = scale;
+    dest->number = src;
+
+    return (0);
 }
 
 /*
@@ -153,13 +153,12 @@ itodec(decimal_t *dest, int src)
  * TODO: None
  */
 int
-ftodec(decimal_t *dest, double f)
-{
-	static char valbuf[20];
+ftodec(decimal_t *dest, double f) {
+    static char valbuf[20];
 
-	sprintf(valbuf, "%f", f);
-	
-	return(strtodec(dest, valbuf));
+    sprintf(valbuf, "%f", f);
+
+    return (strtodec(dest, valbuf));
 }
 
 /*
@@ -177,36 +176,32 @@ ftodec(decimal_t *dest, double f)
  * TODO: None
  */
 int
-strtodec(decimal_t *dest, char *s)
-{
-	int i;
-	char *d_pt;
-	char valbuf[20];
+strtodec(decimal_t *dest, char *s) {
+    int i;
+    char *d_pt;
+    char valbuf[20];
 
-	strcpy(valbuf, s);
-	dest->flags = 0;
-	if ((d_pt = strchr(valbuf, '.')) == NULL)
-		{
-		dest->scale = strlen(valbuf);
-		dest->number = atoi(valbuf);
-		dest->precision = 0;
-		}
-	else
-		{
-		*d_pt = '\0';
-		d_pt += 1;
-		dest->scale = strlen(valbuf);
-		dest->number = atoi(valbuf);
-		dest->precision = strlen(d_pt);
-		for (i=0; i < dest->precision; i++)
-			dest->number *=10;
-		dest->number += atoi(d_pt);
-		}
-	
-	if (*s == '-' && dest->number > 0)
-		dest->number *= -1;
+    strcpy(valbuf, s);
+    dest->flags = 0;
+    if ((d_pt = strchr(valbuf, '.')) == NULL) {
+        dest->scale = strlen(valbuf);
+        dest->number = atoi(valbuf);
+        dest->precision = 0;
+    } else {
+        *d_pt = '\0';
+        d_pt += 1;
+        dest->scale = strlen(valbuf);
+        dest->number = atoi(valbuf);
+        dest->precision = strlen(d_pt);
+        for (i = 0; i < dest->precision; i++)
+            dest->number *= 10;
+        dest->number += atoi(d_pt);
+    }
 
-	return(0);
+    if (*s == '-' && dest->number > 0)
+        dest->number *= -1;
+
+    return (0);
 }
 
 /*
@@ -224,27 +219,25 @@ strtodec(decimal_t *dest, char *s)
  * TODO: None
  */
 int
-dectostr(char *dest, decimal_t *d)
-{
-	ds_key_t number;
-	int i;
-   static int bInit = 0;
-   static char szFormat[20];
+dectostr(char *dest, decimal_t *d) {
+    ds_key_t number;
+    int i;
+    static int bInit = 0;
+    static char szFormat[20];
 
-   if (!bInit)
-   {
-      sprintf(szFormat, "%s.%s", HUGE_FORMAT, HUGE_FORMAT);
-      bInit = 1;
-   }
-	
-	if (d == NULL || dest == NULL)
-		return(-1);
-	for (number=d->number, i=0; i < d->precision; i++)
-		number /= 10;
+    if (!bInit) {
+        sprintf(szFormat, "%s.%s", HUGE_FORMAT, HUGE_FORMAT);
+        bInit = 1;
+    }
 
-	sprintf(dest, szFormat, number, d->number - number);
+    if (d == NULL || dest == NULL)
+        return (-1);
+    for (number = d->number, i = 0; i < d->precision; i++)
+        number /= 10;
 
-	return(0);
+    sprintf(dest, szFormat, number, d->number - number);
+
+    return (0);
 }
 
 /*
@@ -262,21 +255,20 @@ dectostr(char *dest, decimal_t *d)
  * TODO: None
  */
 int
-dectoflt(double *dest, decimal_t *d)
-	{
-	if ((dest == NULL) || (d == NULL))
-		return(-1);
+dectoflt(double *dest, decimal_t *d) {
+    if ((dest == NULL) || (d == NULL))
+        return (-1);
 #ifdef WIN32
 #pragma warning(disable: 4244)
 #endif
-	*dest = d->number;
+    *dest = d->number;
 #ifdef WIN32
 #pragma warning(default: 4244)
 #endif
-	while (--d->precision > 0)
-		*dest /= 10.0;
-	
-	return(0);
+    while (--d->precision > 0)
+        *dest /= 10.0;
+
+    return (0);
 }
 
 /*
@@ -294,105 +286,97 @@ dectoflt(double *dest, decimal_t *d)
  * TODO: None
  */
 int
-decimal_t_op(decimal_t *dest, int op, decimal_t *d1, decimal_t *d2)
-{
-	int res,
-		np;
-	float f1,
-		f2;
-	
-	if ((d1 == NULL) || (d2 == NULL))
-		return(-1);
+decimal_t_op(decimal_t *dest, int op, decimal_t *d1, decimal_t *d2) {
+    int res,
+            np;
+    float f1,
+            f2;
 
-	dest->scale = (d1->scale > d2->scale)?d1->scale:d2->scale;
-	if (d1->precision > d2->precision)
-	{
-		dest->precision = d1->precision;
-	}
-	else
-	{
-		dest->precision = d2->precision;
-	}
+    if ((d1 == NULL) || (d2 == NULL))
+        return (-1);
 
-	switch(op)
-		{
-		case OP_PLUS:
-			dest->number = d1->number + d2->number;
-			break;
-		case OP_MINUS:
-			dest->number = d1->number - d2->number;
-			break;
-		case OP_MULT:
-			res = d1->precision + d2->precision;
-			dest->number = d1->number * d2->number;
-			while (res-- > dest->precision)
-				dest->number /= 10;
-			break;
-		case OP_DIV:
-			f1 = (float)d1->number;
-			np = d1->precision;
-			while (np < dest->precision)
-			{
-				f1 *= 10.0;
-				np += 1;
-			}
-			np = 0;
-			while (np < dest->precision)
-			{
-				f1 *= 10.0;
-				np += 1;
-			}
-			f2 = (float)d2->number;
-			np = d2->precision;
-			while (np < dest->precision)
-			{
-				f2 *= 10.0;
-				np += 1;
-			}
+    dest->scale = (d1->scale > d2->scale) ? d1->scale : d2->scale;
+    if (d1->precision > d2->precision) {
+        dest->precision = d1->precision;
+    } else {
+        dest->precision = d2->precision;
+    }
 
-			dest->number = (int)(f1/f2);
-			break;
-		default:
-			printf("decimal_t_op does not support op %d\n", op);
-			exit(1);
-			break;
-		}
-	
-	return(0);
+    switch (op) {
+        case OP_PLUS:
+            dest->number = d1->number + d2->number;
+            break;
+        case OP_MINUS:
+            dest->number = d1->number - d2->number;
+            break;
+        case OP_MULT:
+            res = d1->precision + d2->precision;
+            dest->number = d1->number * d2->number;
+            while (res-- > dest->precision)
+                dest->number /= 10;
+            break;
+        case OP_DIV:
+            f1 = (float) d1->number;
+            np = d1->precision;
+            while (np < dest->precision) {
+                f1 *= 10.0;
+                np += 1;
+            }
+            np = 0;
+            while (np < dest->precision) {
+                f1 *= 10.0;
+                np += 1;
+            }
+            f2 = (float) d2->number;
+            np = d2->precision;
+            while (np < dest->precision) {
+                f2 *= 10.0;
+                np += 1;
+            }
+
+            dest->number = (int) (f1 / f2);
+            break;
+        default:
+            printf("decimal_t_op does not support op %d\n", op);
+            exit(1);
+            break;
+    }
+
+    return (0);
 }
 
 #ifdef TEST
 main()
 {
-	decimal_t *res;
-	int	code;
+    decimal_t *res;
+    int	code;
 
-	/* mk_decimal */
-	res = mk_decimal(5,2);
-	if (res == NULL)
-		{
-		printf("mk_decimal returned NULL\n");
-		exit(-1);
-		}
+    /* mk_decimal */
+    res = mk_decimal(5,2);
+    if (res == NULL)
+        {
+        printf("mk_decimal returned NULL\n");
+        exit(-1);
+        }
 
-	/* itodec */
-	itodec(res, 0);
-	code = dectoi(res);
-	if (code)
-		{
-		printf("r_decimal:itodec(0, res) != 0 (%d)\n", code);
-		exit(-1);
-		}
+    /* itodec */
+    itodec(res, 0);
+    code = dectoi(res);
+    if (code)
+        {
+        printf("r_decimal:itodec(0, res) != 0 (%d)\n", code);
+        exit(-1);
+        }
 
-	itodec(res, 999);
-	code = dectoi(res);
-	if (code != 999)
-		{
-		printf("r_decimal:itodec(999, res) != 0 (%d)\n", code);
-		exit(-1);
-		}
+    itodec(res, 999);
+    code = dectoi(res);
+    if (code != 999)
+        {
+        printf("r_decimal:itodec(999, res) != 0 (%d)\n", code);
+        exit(-1);
+        }
 
-	exit(0);
+    exit(0);
 }
 #endif /* TEST */
 

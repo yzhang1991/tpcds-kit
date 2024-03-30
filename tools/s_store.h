@@ -32,10 +32,14 @@
  * 
  * Contributors:
  * Gradient Systems
- */ 
+ */
 #ifndef S_STORE_H
 #define S_STORE_H
+
 int mk_s_store(void *row, ds_key_t kIndex);
+
 int pr_s_store(void *pSrc);
+
 int ld_s_store(void *pSrc);
+
 #endif

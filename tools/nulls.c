@@ -32,7 +32,7 @@
  * 
  * Contributors:
  * Gradient Systems
- */ 
+ */
 #include "config.h"
 #include "porting.h"
 #include "nulls.h"
@@ -54,18 +54,17 @@
 * TODO: None
 */
 int
-nullCheck(int nColumn)
-{
-	static int nLastTable = 0;
-	tdef *pTdef;
-	ds_key_t kBitMask = 1;
+nullCheck(int nColumn) {
+    static int nLastTable = 0;
+    tdef *pTdef;
+    ds_key_t kBitMask = 1;
 
-	nLastTable = getTableFromColumn(nColumn);
-	pTdef = getSimpleTdefsByNumber(nLastTable);
+    nLastTable = getTableFromColumn(nColumn);
+    pTdef = getSimpleTdefsByNumber(nLastTable);
 
-	kBitMask <<= nColumn - pTdef->nFirstColumn;
+    kBitMask <<= nColumn - pTdef->nFirstColumn;
 
-	return((pTdef->kNullBitMap & kBitMask) != 0);
+    return ((pTdef->kNullBitMap & kBitMask) != 0);
 }
 
 /*
@@ -86,27 +85,25 @@ nullCheck(int nColumn)
 * TODO: None
 */
 void
-nullSet(ds_key_t *pDest, int nStream)
-{
-	int nThreshold;
-   ds_key_t kBitMap;
-	static int nLastTable = 0;
-   tdef *pTdef;
+nullSet(ds_key_t *pDest, int nStream) {
+    int nThreshold;
+    ds_key_t kBitMap;
+    static int nLastTable = 0;
+    tdef *pTdef;
 
-	nLastTable = getTableFromColumn(nStream);
-   pTdef = getSimpleTdefsByNumber(nLastTable);
+    nLastTable = getTableFromColumn(nStream);
+    pTdef = getSimpleTdefsByNumber(nLastTable);
 
-	/* burn the RNG calls */
-	genrand_integer(&nThreshold, DIST_UNIFORM, 0, 9999, 0, nStream);
-	genrand_key(&kBitMap, DIST_UNIFORM, 1, MAXINT, 0, nStream);
+    /* burn the RNG calls */
+    genrand_integer(&nThreshold, DIST_UNIFORM, 0, 9999, 0, nStream);
+    genrand_key(&kBitMap, DIST_UNIFORM, 1, MAXINT, 0, nStream);
 
-	/* set the bitmap based on threshold and NOT NULL definitions */
-	*pDest = 0;
-	if (nThreshold < pTdef->nNullPct)
-	{
-		*pDest = kBitMap;
-		*pDest &= ~pTdef->kNotNullBitMap;
-	}
+    /* set the bitmap based on threshold and NOT NULL definitions */
+    *pDest = 0;
+    if (nThreshold < pTdef->nNullPct) {
+        *pDest = kBitMap;
+        *pDest &= ~pTdef->kNotNullBitMap;
+    }
 
-	return;
+    return;
 }

@@ -32,6 +32,6 @@
  * 
  * Contributors:
  * Gradient Systems
- */ 
-int initSparseKeys(int nTable);				/* populate the set of valid keys */
-ds_key_t randomSparseKey(int nTable, int nColumn);	/* select a random sparse key */
+ */
+int initSparseKeys(int nTable);                /* populate the set of valid keys */
+ds_key_t randomSparseKey(int nTable, int nColumn);    /* select a random sparse key */

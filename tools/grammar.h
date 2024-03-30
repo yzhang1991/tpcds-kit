@@ -32,23 +32,30 @@
  * 
  * Contributors:
  * Gradient Systems
- */ 
+ */
 #ifndef GRAMMAR_H
 #define GRAMMAR_H
 
 typedef struct TOKEN_T {
-	int index;
-	char word[40];
-	int (*handler)(char *s, struct TOKEN_T *t);
+    int index;
+    char word[40];
+
+    int (*handler)(char *s, struct TOKEN_T *t);
 } token_t;
 
-#define COMMENT_CHAR	'-'
-#define STMT_END		';'
+#define COMMENT_CHAR    '-'
+#define STMT_END        ';'
+
 int ParseFile(char *szPath);
+
 int FindToken(char *name);
+
 void SetTokens(token_t *t);
+
 char *ProcessStr(char *stmt, token_t *pTokens);
-char	*SafeStrtok(char *string, char *delims);
+
+char *SafeStrtok(char *string, char *delims);
+
 extern token_t *pTokens;
 
 #endif /* GRAMMAR_H */

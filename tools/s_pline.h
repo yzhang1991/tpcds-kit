@@ -32,28 +32,32 @@
  * 
  * Contributors:
  * Gradient Systems
- */ 
+ */
 #ifndef S_PLINE_H
 #define S_PLINE_H
+
 #include "pricing.h"
 
-#define RS_S_PLINE_COMMENT	100
-#define PLINE_MIN_QUANTITY	1
-#define PLINE_MAX_QUANTITY	100
-#define PLINE_RETURN_PCT	3
+#define RS_S_PLINE_COMMENT    100
+#define PLINE_MIN_QUANTITY    1
+#define PLINE_MAX_QUANTITY    100
+#define PLINE_RETURN_PCT    3
 
 struct S_PURCHASE_LINEITEM_TBL {
-	ds_key_t	kPurchaseID;
-	ds_key_t	kLineNumber;
-	ds_key_t	kItemID;
-	ds_key_t	kPromotionID;
-	int			nRegister;
-	int			nClerk;
-	char		szComment[RS_S_PLINE_COMMENT + 1];
-	ds_pricing_t	Pricing;
+    ds_key_t kPurchaseID;
+    ds_key_t kLineNumber;
+    ds_key_t kItemID;
+    ds_key_t kPromotionID;
+    int nRegister;
+    int nClerk;
+    char szComment[RS_S_PLINE_COMMENT + 1];
+    ds_pricing_t Pricing;
 };
 
 int mk_s_pline(void *pDest, ds_key_t kIndex);
+
 int pr_s_pline(void *pSrc);
+
 int ld_s_pline(void *pSrc);
+
 #endif

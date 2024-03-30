@@ -32,9 +32,10 @@
  * 
  * Contributors:
  * Gradient Systems
- */ 
+ */
 #ifndef R_DECIMAL_H
 #define R_DECIMAL_H
+
 #include "config.h"
 #include "porting.h"
 #include "mathops.h"
@@ -45,39 +46,48 @@
  * arithmetic.
  */
 typedef struct DECIMAL_T {
-	int flags;
-	int precision;
-	int scale;
-	ds_key_t number;
+    int flags;
+    int precision;
+    int scale;
+    ds_key_t number;
 } decimal_t;
 
-#define FL_INIT		0x0004
+#define FL_INIT        0x0004
 
-decimal_t	*mk_decimal(int s, int p);
+decimal_t *mk_decimal(int s, int p);
 
 int itodec(decimal_t *dest, int i);
+
 int ftodec(decimal_t *d, double f);
+
 int strtodec(decimal_t *d, char *src);
 
-int	dectostr(char *dest, decimal_t *d);
-int dectof(double *dest, decimal_t *);
-#define dectoi(d)	atoi(d->number)
+int dectostr(char *dest, decimal_t *d);
 
-int	decimal_t_op(decimal_t *dest, int o, decimal_t *d1, decimal_t *d2);
-void	print_decimal(int nColumn, decimal_t *d, int s);
-void	set_precision(decimal_t *d, int sie, int precision);
+int dectof(double *dest, decimal_t *);
+
+#define dectoi(d)    atoi(d->number)
+
+int decimal_t_op(decimal_t *dest, int o, decimal_t *d1, decimal_t *d2);
+
+void print_decimal(int nColumn, decimal_t *d, int s);
+
+void set_precision(decimal_t *d, int sie, int precision);
 
 static inline void decimal_t_op_plus(decimal_t *dest, decimal_t *d1, decimal_t *d2) {
-	dest->number = d1->number + d2->number;
+    dest->number = d1->number + d2->number;
 }
+
 static inline void decimal_t_op_minus(decimal_t *dest, decimal_t *d1, decimal_t *d2) {
-	dest->number = d1->number - d2->number;
+    dest->number = d1->number - d2->number;
 }
+
 static inline void decimal_t_op_mult0(decimal_t *dest, decimal_t *d1, decimal_t *d2) {
-	dest->number = d1->number * d2->number;
+    dest->number = d1->number * d2->number;
 }
+
 static inline void decimal_t_op_mult2(decimal_t *dest, decimal_t *d1, decimal_t *d2) {
-	dest->number = d1->number * d2->number / 100;
+    dest->number = d1->number * d2->number / 100;
 }
 
 #define NegateDecimal(d) (d)->number *= -1

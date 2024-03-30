@@ -32,7 +32,8 @@
  * 
  * Contributors:
  * Gradient Systems
- */ 
+ */
 int nullCheck(int nColumn);
+
 void nullSet(ds_key_t *pDest, int nStream);
 

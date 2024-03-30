@@ -32,7 +32,7 @@
  * 
  * Contributors:
  * Gradient Systems
- */ 
+ */
 /*********************
  ** Define some routines that, while common, are not ANSI standard 
  *********************/
@@ -41,17 +41,17 @@
 #include <stdlib.h>
 
 #ifndef strdup
-char *strdup(const char *szSrc)
-{
-   char *szResult;
 
-   szResult = (char *)malloc(strlen(szSrc) + 1);
-   if (szResult)
-   {
-      strcpy(szResult, szSrc);
-   }
+char *strdup(const char *szSrc) {
+    char *szResult;
 
-   return(szResult);
+    szResult = (char *) malloc(strlen(szSrc) + 1);
+    if (szResult) {
+        strcpy(szResult, szSrc);
+    }
+
+    return (szResult);
 }
+
 #endif
 

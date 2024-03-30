@@ -32,7 +32,7 @@
  * 
  * Contributors:
  * Gradient Systems
- */ 
+ */
 
 #include "config.h"
 #include "porting.h"
@@ -41,13 +41,19 @@
 #include <errno.h>
 #include <ctype.h>
 #include <math.h>
+
 #ifndef USE_STDLIB_H
+
 #include <malloc.h>
+
 #endif
+
 #include <fcntl.h>
+
 #ifdef AIX
 #include <sys/mode.h>
 #endif /* AIX */
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include "date.h"
@@ -59,11 +65,12 @@
 #include "genrand.h"
 
 static char alpha_num[65] =
-   "0123456789abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ,";
+        "0123456789abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ,";
 
 
-char *getenv (const char *name);
-int print_separator (int sep);
+char *getenv(const char *name);
+
+int print_separator(int sep);
 
 extern long Seed[];
 
@@ -89,14 +96,13 @@ int file_num = -1;
  * value; otherwise return the default supplied
  */
 char *
-env_config (char *var, char *dflt)
-{
-   static char *evar;
+env_config(char *var, char *dflt) {
+    static char *evar;
 
-   if ((evar = getenv (var)) != NULL)
-      return (evar);
-   else
-      return (dflt);
+    if ((evar = getenv(var)) != NULL)
+        return (evar);
+    else
+        return (dflt);
 }
 
 /*
@@ -105,20 +111,18 @@ env_config (char *var, char *dflt)
  * and comma)
  */
 int
-a_rnd (int min, int max, int column, char *dest)
-{
-   int i,
-     len,
-     char_int;
+a_rnd(int min, int max, int column, char *dest) {
+    int i,
+            len,
+            char_int;
 
-   genrand_integer (&len, DIST_UNIFORM, min, max, 0, column);
-   for (i = 0; i < len; i++)
-     {
+    genrand_integer(&len, DIST_UNIFORM, min, max, 0, column);
+    for (i = 0; i < len; i++) {
         if (i % 5 == 0)
-           genrand_integer (&char_int, DIST_UNIFORM, 0, 1 << 30, 0, column);
+            genrand_integer(&char_int, DIST_UNIFORM, 0, 1 << 30, 0, column);
         *(dest + i) = alpha_num[char_int & 077];
         char_int >>= 6;
-     }
-   *(dest + len) = '\0';
-   return (len);
+    }
+    *(dest + len) = '\0';
+    return (len);
 }

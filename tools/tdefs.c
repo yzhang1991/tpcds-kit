@@ -32,7 +32,7 @@
  * 
  * Contributors:
  * Gradient Systems
- */ 
+ */
 #include "config.h"
 #include "porting.h"
 #include <stdio.h>
@@ -65,17 +65,16 @@ extern table_func_t w_tdef_funcs[];
 * Side Effects:
 * TODO: None
 */
-ds_key_t 
-GetRowcountByName(char *szName)
-{
-	int nTable = -1;
-	
-	nTable = GetTableNumber(szName);
-	if (nTable >= 0)
-		return(get_rowcount(nTable - 1));
+ds_key_t
+GetRowcountByName(char *szName) {
+    int nTable = -1;
 
-	nTable = distsize(szName);
-	return(nTable);
+    nTable = GetTableNumber(szName);
+    if (nTable >= 0)
+        return (get_rowcount(nTable - 1));
+
+    nTable = distsize(szName);
+    return (nTable);
 
 }
 
@@ -93,20 +92,18 @@ GetRowcountByName(char *szName)
 * Side Effects:
 * TODO: None
 */
-int 
-GetTableNumber(char *szName)
-{
-	int i;
-	char *szTable;
+int
+GetTableNumber(char *szName) {
+    int i;
+    char *szTable;
 
-	for (i=1; i <= distsize("rowcounts"); i++)
-	{
-		dist_member(&szTable, "rowcounts", i, 1);
-		if (strcasecmp(szTable, szName) == 0)
-			return(i - 1);
-	}
+    for (i = 1; i <= distsize("rowcounts"); i++) {
+        dist_member(&szTable, "rowcounts", i, 1);
+        if (strcasecmp(szTable, szName) == 0)
+            return (i - 1);
+    }
 
-	return(-1);
+    return (-1);
 }
 
 /*
@@ -147,33 +144,33 @@ getTdefsByNumber(int nTable)
 }
 */
 tdef *
-getSimpleTdefsByNumber(nTable)
-{
-   if (nTable >= S_BRAND)
-      return(&s_tdefs[nTable - S_BRAND]);
-   return(&w_tdefs[nTable]);
+getSimpleTdefsByNumber(nTable) {
+    if (nTable >= S_BRAND)
+        return (&s_tdefs[nTable - S_BRAND]);
+    return (&w_tdefs[nTable]);
 }
 
 tdef *
-getTdefsByNumber(int nTable)
-{
-   if (is_set("UPDATE") && is_set("VALIDATE"))
-   {
-      if (s_tdefs[nTable].flags & FL_PASSTHRU)
-      {
-         switch(nTable + S_BRAND)
-         {
-         case S_CATALOG_PAGE: nTable = CATALOG_PAGE; break;
-         case S_CUSTOMER_ADDRESS: nTable = CUSTOMER_ADDRESS; break;
-         case S_PROMOTION: nTable = PROMOTION; break;
-         }
-         return(&w_tdefs[nTable]);
-      }
-      else
-         return(&s_tdefs[nTable]);
-   }
+getTdefsByNumber(int nTable) {
+    if (is_set("UPDATE") && is_set("VALIDATE")) {
+        if (s_tdefs[nTable].flags & FL_PASSTHRU) {
+            switch (nTable + S_BRAND) {
+                case S_CATALOG_PAGE:
+                    nTable = CATALOG_PAGE;
+                    break;
+                case S_CUSTOMER_ADDRESS:
+                    nTable = CUSTOMER_ADDRESS;
+                    break;
+                case S_PROMOTION:
+                    nTable = PROMOTION;
+                    break;
+            }
+            return (&w_tdefs[nTable]);
+        } else
+            return (&s_tdefs[nTable]);
+    }
 
-   return(getSimpleTdefsByNumber(nTable));
+    return (getSimpleTdefsByNumber(nTable));
 }
 
 
@@ -192,11 +189,10 @@ getTdefsByNumber(int nTable)
 * TODO: None
 */
 char *
-getTableNameByID(int i)
-{	
-   tdef *pT = getSimpleTdefsByNumber(i);
+getTableNameByID(int i) {
+    tdef *pT = getSimpleTdefsByNumber(i);
 
-	return(pT->name);
+    return (pT->name);
 }
 
 /*
@@ -214,9 +210,9 @@ getTableNameByID(int i)
 * TODO: None
 */
 int tableFromColumnCache[MAX_COLUMN + 1];
+
 int
-getTableFromColumn(int nColumn)
-{
+getTableFromColumn(int nColumn) {
     static int init = 0;
     if (!init) {
         int i, j;

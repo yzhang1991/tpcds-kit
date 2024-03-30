@@ -32,7 +32,7 @@
  * 
  * Contributors:
  * Gradient Systems
- */ 
+ */
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -48,6 +48,7 @@
 int nLineNumber = 0;
 extern char *CurrentFileName;
 token_t *pTokens;
+
 int ProcessOther(char *stmt, token_t *pTokens);
 
 
@@ -66,14 +67,13 @@ int ProcessOther(char *stmt, token_t *pTokens);
  * TODO: None
  */
 char *
-ProcessStr (char *stmt, token_t * tokens)
-{
-   char *cp;
+ProcessStr(char *stmt, token_t *tokens) {
+    char *cp;
 
-   if ((cp = SafeStrtok (NULL, "\"")) == NULL)
-      ReportError (QERR_BAD_STRING, NULL, 1);
+    if ((cp = SafeStrtok(NULL, "\"")) == NULL)
+        ReportError(QERR_BAD_STRING, NULL, 1);
 
-   return (cp);
+    return (cp);
 }
 
 
@@ -92,28 +92,25 @@ ProcessStr (char *stmt, token_t * tokens)
  * TODO: None
  */
 int
-ProcessComments (char *line)
-{
-   char *cp;
-   int i = 0;
+ProcessComments(char *line) {
+    char *cp;
+    int i = 0;
 
-   if (line == NULL)
-      return (-1);
+    if (line == NULL)
+        return (-1);
 
-   if ((cp = strchr (line, COMMENT_CHAR)) != NULL)
-     {
+    if ((cp = strchr(line, COMMENT_CHAR)) != NULL) {
         if (*(cp + 1) == COMMENT_CHAR)
-           *cp = '\0';
-     }
+            *cp = '\0';
+    }
 
-   cp = line;
-   while (*cp && (*cp == ' ' || *cp == '\t' || *cp == '\r'))
-     {
+    cp = line;
+    while (*cp && (*cp == ' ' || *cp == '\t' || *cp == '\r')) {
         i += 1;
         cp += 1;
-     }
+    }
 
-   return (i);
+    return (i);
 }
 
 /*
@@ -131,48 +128,46 @@ ProcessComments (char *line)
  * TODO: None
  */
 char *
-AddLine (char *line)
-{
-   static int nCharAllocated = 0;
-   static int nCharInUse = 0;
-   static char *szResult;
-   int nCharAvailable,
-     nCharRequested,
-     nCharAdditional;
+AddLine(char *line) {
+    static int nCharAllocated = 0;
+    static int nCharInUse = 0;
+    static char *szResult;
+    int nCharAvailable,
+            nCharRequested,
+            nCharAdditional;
 
-   if (line == NULL)            /*  initialization */
-     {
+    if (line == NULL)            /*  initialization */
+    {
         nCharInUse = 0;
         return (NULL);
-     }
+    }
 
-   nCharAvailable = nCharAllocated - nCharInUse - 1;
-   nCharRequested = strlen (line);
+    nCharAvailable = nCharAllocated - nCharInUse - 1;
+    nCharRequested = strlen(line);
 
-   if (nCharRequested == 0)     /*  asked to add a null line */
-      return (szResult);
-   nCharRequested += 1; /* add a space between pieces */
+    if (nCharRequested == 0)     /*  asked to add a null line */
+        return (szResult);
+    nCharRequested += 1; /* add a space between pieces */
 
-   if (nCharAvailable < nCharRequested) /*  need more room */
-     {
+    if (nCharAvailable < nCharRequested) /*  need more room */
+    {
         nCharAdditional = (nCharRequested > 250) ? nCharRequested : 250;
         szResult =
-           (char *) realloc ((void *) szResult,
-                             nCharAllocated + nCharAdditional);
+                (char *) realloc((void *) szResult,
+                                 nCharAllocated + nCharAdditional);
         nCharAllocated += 250;
-     }
+    }
 
-   if (szResult != NULL)
-     {
+    if (szResult != NULL) {
         if (nCharInUse == 0)
-           strcpy (szResult, line);
+            strcpy(szResult, line);
         else
-           strcat (szResult, line);
-		strcat(szResult, " ");	/* and add the space we reserved room for above */
+            strcat(szResult, line);
+        strcat(szResult, " ");    /* and add the space we reserved room for above */
         nCharInUse += nCharRequested;
-     }
+    }
 
-   return (szResult);
+    return (szResult);
 }
 
 /*
@@ -190,11 +185,10 @@ AddLine (char *line)
 * TODO: None
 */
 void
-SetTokens (token_t * pToken)
-{
-   pTokens = pToken;
+SetTokens(token_t *pToken) {
+    pTokens = pToken;
 
-   return;
+    return;
 }
 
 /*
@@ -212,19 +206,17 @@ SetTokens (token_t * pToken)
  * TODO: None
  */
 int
-FindToken (char *word)
-{
-   int nRetCode = 0;
-   int i;
+FindToken(char *word) {
+    int nRetCode = 0;
+    int i;
 
-   /*  Note: linear search should be replaced if the word count gets large */
-   for (i = 1; pTokens[i].index != -1; i++)
-     {
-        if (!strcasecmp (pTokens[i].word, word))
-           nRetCode = pTokens[i].index;
-     }
+    /*  Note: linear search should be replaced if the word count gets large */
+    for (i = 1; pTokens[i].index != -1; i++) {
+        if (!strcasecmp(pTokens[i].word, word))
+            nRetCode = pTokens[i].index;
+    }
 
-   return (nRetCode);
+    return (nRetCode);
 }
 
 /*
@@ -242,95 +234,89 @@ FindToken (char *word)
  * TODO: None
  */
 int
-ParseFile (char *szPath)
-{
-   FILE *fp;
-   char szLine[4096];           /*  is there a good portable constant for this? */
-   char *stmt,
-    *line_start,
-    *cp;
-   int i,
-     nRetCode = 0;
-   StringBuffer_t *pLineBuffer;
+ParseFile(char *szPath) {
+    FILE *fp;
+    char szLine[4096];           /*  is there a good portable constant for this? */
+    char *stmt,
+            *line_start,
+            *cp;
+    int i,
+            nRetCode = 0;
+    StringBuffer_t *pLineBuffer;
 
-   /*  open the template, or return an error */
+    /*  open the template, or return an error */
 
 /*  Gosh, I love non-standard extensions to standard functions! */
 #ifdef WIN32
-   if ((fp = fopen (szPath, "rt")) == NULL)
+    if ((fp = fopen (szPath, "rt")) == NULL)
 #else
-   if ((fp = fopen (szPath, "r")) == NULL)
+    if ((fp = fopen(szPath, "r")) == NULL)
 #endif
-      return (ReportErrorNoLine(QERR_NO_FILE, szPath, 0));
+        return (ReportErrorNoLine(QERR_NO_FILE, szPath, 0));
 
-   /* shift current file indicator for error messages */
-   if (CurrentFileName != NULL)
-      free (CurrentFileName);
-   CurrentFileName = strdup (szPath);
-   pLineBuffer = InitBuffer(100, 20);
-   nLineNumber = 0;
-   SetErrorGlobals(szPath, &nLineNumber);
+    /* shift current file indicator for error messages */
+    if (CurrentFileName != NULL)
+        free(CurrentFileName);
+    CurrentFileName = strdup(szPath);
+    pLineBuffer = InitBuffer(100, 20);
+    nLineNumber = 0;
+    SetErrorGlobals(szPath, &nLineNumber);
 
-   while ((fgets (szLine, 4096, fp) != NULL) && (nRetCode >= 0))
-     {
+    while ((fgets(szLine, 4096, fp) != NULL) && (nRetCode >= 0)) {
         nLineNumber += 1;
-        if ((cp = strchr (szLine, '\n')))
-           *cp = '\0';
+        if ((cp = strchr(szLine, '\n')))
+            *cp = '\0';
         else
-           ReportError (QERR_LINE_TOO_LONG, NULL, 1);
+            ReportError(QERR_LINE_TOO_LONG, NULL, 1);
 
         /*  build a complete statement  */
-        i = ProcessComments (szLine);
+        i = ProcessComments(szLine);
         if (i < 0)
-           return (i);
+            return (i);
         line_start = (szLine + i);
-        if (strlen (line_start) == 0)
-           continue;            /*  nothing to do with an empty line */
+        if (strlen(line_start) == 0)
+            continue;            /*  nothing to do with an empty line */
 
         AddBuffer(pLineBuffer, line_start);
-        if ((cp = strchr (line_start, STMT_END)) == NULL)
-		{
-			AddBuffer(pLineBuffer, " ");
-           continue;
-		}
+        if ((cp = strchr(line_start, STMT_END)) == NULL) {
+            AddBuffer(pLineBuffer, " ");
+            continue;
+        }
         if (*(cp - 1) == '\\')
-		if ((cp = strchr (cp + 1, STMT_END)) == NULL)
-		{
-			AddBuffer(pLineBuffer, " ");
-           continue;
-		}
+            if ((cp = strchr(cp + 1, STMT_END)) == NULL) {
+                AddBuffer(pLineBuffer, " ");
+                continue;
+            }
 
-		/*  
+        /*
          * NOTE: this assumes that the first word indentifies the statement type 
          */
         stmt = GetBuffer(pLineBuffer);
-		cp = SafeStrtok (stmt, " \t");
-        i = FindToken (cp);
-        if (i != 0)
-          {
-             if (pTokens[i].handler != NULL)
-                nRetCode = pTokens[i].handler (stmt, pTokens);
-             else
+        cp = SafeStrtok(stmt, " \t");
+        i = FindToken(cp);
+        if (i != 0) {
+            if (pTokens[i].handler != NULL)
+                nRetCode = pTokens[i].handler(stmt, pTokens);
+            else
                 nRetCode = -17; /* QERR_SYNTAX; */
-          }
-        else                    /*  other text (i.e., SQL) possibly with subsitution targets) */
-           nRetCode = ProcessOther (stmt, pTokens);
+        } else                    /*  other text (i.e., SQL) possibly with subsitution targets) */
+            nRetCode = ProcessOther(stmt, pTokens);
 
         ResetBuffer(pLineBuffer);
-     }
+    }
 
-   if (!feof (fp) && (nRetCode >= 0))
-      ReportError (QERR_READ_FAILED, szPath, 0);
-   if (nRetCode < 0)
-	   ReportError(nRetCode, szLine, 0);
-	
+    if (!feof(fp) && (nRetCode >= 0))
+        ReportError(QERR_READ_FAILED, szPath, 0);
+    if (nRetCode < 0)
+        ReportError(nRetCode, szLine, 0);
 
-   fclose (fp);
+
+    fclose(fp);
 /* jms -- need to reintroduce this
    FreeBuffer(pLineBuffer);
    */
 
-   return (nRetCode);
+    return (nRetCode);
 }
 
 
@@ -349,35 +335,29 @@ ParseFile (char *szPath)
 * TODO: None
 */
 char *
-SafeStrtok (char *string, char *delims)
-{
-   static char *szScratch = NULL;
-   static int nScratchLen = 0;
+SafeStrtok(char *string, char *delims) {
+    static char *szScratch = NULL;
+    static int nScratchLen = 0;
 
-   if (string != NULL)
-     {
-        if (szScratch == NULL)
-          {
-             szScratch = (char *) malloc (strlen (string) + 1);
-		MALLOC_CHECK(szScratch);
-             if (szScratch == NULL)
-                ReportError (QERR_NO_MEMORY, "SafeStrtok", 1);
-             else
-                nScratchLen = strlen (string);
-          }
-        else
-          {
-             if (nScratchLen < (int)strlen (string))
-               {
-                  szScratch = (char *) realloc (szScratch, strlen (string) + 1);
-                  if (szScratch == NULL)
-                     ReportError (QERR_NO_MEMORY, "SafeStrtok", 1);
-                  else
-                     nScratchLen = strlen (string);
-               }
-          }
-        strcpy (szScratch, string);
-        return (strtok (szScratch, delims));
-     }
-   return (strtok (NULL, delims));
+    if (string != NULL) {
+        if (szScratch == NULL) {
+            szScratch = (char *) malloc(strlen(string) + 1);
+            MALLOC_CHECK(szScratch);
+            if (szScratch == NULL)
+                ReportError(QERR_NO_MEMORY, "SafeStrtok", 1);
+            else
+                nScratchLen = strlen(string);
+        } else {
+            if (nScratchLen < (int) strlen(string)) {
+                szScratch = (char *) realloc(szScratch, strlen(string) + 1);
+                if (szScratch == NULL)
+                    ReportError(QERR_NO_MEMORY, "SafeStrtok", 1);
+                else
+                    nScratchLen = strlen(string);
+            }
+        }
+        strcpy(szScratch, string);
+        return (strtok(szScratch, delims));
+    }
+    return (strtok(NULL, delims));
 }

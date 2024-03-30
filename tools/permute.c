@@ -32,12 +32,16 @@
  * 
  * Contributors:
  * Gradient Systems
- */ 
+ */
 #include "config.h"
 #include "porting.h"
+
 #ifndef USE_STDLIB_H
+
 #include <malloc.h>
+
 #endif
+
 #include <stdio.h>
 #include "genrand.h"
 
@@ -56,34 +60,31 @@
 * TODO: None
 */
 int *
-makePermutation(int *nNumberSet, int nSize, int nStream)
-{
-	int i,
-		nTemp,
-		nIndex,
-		*pInt;
+makePermutation(int *nNumberSet, int nSize, int nStream) {
+    int i,
+            nTemp,
+            nIndex,
+            *pInt;
 
-	if (nSize <= 0)
-		return(NULL);
+    if (nSize <= 0)
+        return (NULL);
 
-	if (!nNumberSet)
-	{
-		nNumberSet = (int *)malloc(nSize * sizeof(int));
-		MALLOC_CHECK(nNumberSet);
-		pInt = nNumberSet;
-		for (i=0; i < nSize; i++)
-			*pInt++ = i;
-	}
+    if (!nNumberSet) {
+        nNumberSet = (int *) malloc(nSize * sizeof(int));
+        MALLOC_CHECK(nNumberSet);
+        pInt = nNumberSet;
+        for (i = 0; i < nSize; i++)
+            *pInt++ = i;
+    }
 
-	for (i=0; i < nSize; i++)
-	{
-		nIndex = genrand_integer(NULL, DIST_UNIFORM, 0, nSize - 1, 0, nStream);
-		nTemp = nNumberSet[i];
-		nNumberSet[i] = nNumberSet[nIndex];
-		nNumberSet[nIndex] = nTemp;
-	}
+    for (i = 0; i < nSize; i++) {
+        nIndex = genrand_integer(NULL, DIST_UNIFORM, 0, nSize - 1, 0, nStream);
+        nTemp = nNumberSet[i];
+        nNumberSet[i] = nNumberSet[nIndex];
+        nNumberSet[nIndex] = nTemp;
+    }
 
-	return(nNumberSet);
+    return (nNumberSet);
 }
 
 /*
@@ -101,32 +102,29 @@ makePermutation(int *nNumberSet, int nSize, int nStream)
 * TODO: None
 */
 ds_key_t *
-makeKeyPermutation(ds_key_t *nNumberSet, ds_key_t nSize, int nStream)
-{
-	ds_key_t i,
-		nTemp,
-		nIndex,
-		*pInt;
-	if (nSize <= 0)
-		return(NULL);
+makeKeyPermutation(ds_key_t *nNumberSet, ds_key_t nSize, int nStream) {
+    ds_key_t i,
+            nTemp,
+            nIndex,
+            *pInt;
+    if (nSize <= 0)
+        return (NULL);
 
-	if (!nNumberSet)
-	{
-		nNumberSet = (ds_key_t *)malloc(nSize * sizeof(ds_key_t));
-		MALLOC_CHECK(nNumberSet);
-		pInt = nNumberSet;
-		for (i=0; i < nSize; i++)
-			*pInt++ = i;
-	}
+    if (!nNumberSet) {
+        nNumberSet = (ds_key_t *) malloc(nSize * sizeof(ds_key_t));
+        MALLOC_CHECK(nNumberSet);
+        pInt = nNumberSet;
+        for (i = 0; i < nSize; i++)
+            *pInt++ = i;
+    }
 
-	for (i=0; i < nSize; i++)
-	{
-		nIndex = genrand_key(NULL, DIST_UNIFORM, 0, nSize - 1, 0, nStream);
-		nTemp = nNumberSet[i];
-		nNumberSet[i] = nNumberSet[nIndex];
-		nNumberSet[nIndex] = nTemp;
-	}
+    for (i = 0; i < nSize; i++) {
+        nIndex = genrand_key(NULL, DIST_UNIFORM, 0, nSize - 1, 0, nStream);
+        nTemp = nNumberSet[i];
+        nNumberSet[i] = nNumberSet[nIndex];
+        nNumberSet[nIndex] = nTemp;
+    }
 
-	return(nNumberSet);
+    return (nNumberSet);
 }
 

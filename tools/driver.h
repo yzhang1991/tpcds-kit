@@ -32,7 +32,7 @@
  * 
  * Contributors:
  * Gradient Systems
- */ 
+ */
 #ifndef R_DRIVER_H
 #define  R_DRIVER_H
 
@@ -40,10 +40,10 @@
  * defines used in the generic portion of r_driver.c
  * table specific defines are built in the output directory
  */
-#define NONE	-1
+#define NONE    -1
 /* note: needs to be kept in sync with a_decimal.h/p_symbol.h */
-#define FL_INIT	0x0004
-#define FL_FACT	0x8000
+#define FL_INIT    0x0004
+#define FL_FACT    0x8000
 
 #ifdef DECLARER
 #define EXTERN
@@ -62,7 +62,6 @@
 #ifndef SEPARATOR
 #define SEPARATOR '|' /* field spearator for generated flat files */
 #endif
-
 
 
 int tbl_init(int tbl, int *s, int *c);

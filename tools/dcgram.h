@@ -32,11 +32,17 @@
  * 
  * Contributors:
  * Gradient Systems
- */ 
+ */
 d_idx_t *AddDistribution(distindex_t *pDistIndex, char *szName);
-int ProcessSet (char *stmt, token_t * tokens);
-int ProcessDistribution (char *stmt, token_t * tokens);
-int ProcessTypes (char *stmt, token_t * tokens);
-int ProcessInclude (char *stmt, token_t * tokens);
-int ProcessOther (char *stmt, token_t * tokens);
-int ProcessNames (char *stmt, token_t * tokens);
+
+int ProcessSet(char *stmt, token_t *tokens);
+
+int ProcessDistribution(char *stmt, token_t *tokens);
+
+int ProcessTypes(char *stmt, token_t *tokens);
+
+int ProcessInclude(char *stmt, token_t *tokens);
+
+int ProcessOther(char *stmt, token_t *tokens);
+
+int ProcessNames(char *stmt, token_t *tokens);
