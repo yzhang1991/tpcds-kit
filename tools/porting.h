@@ -42,7 +42,7 @@
 #include <strings.h>
 #endif
 
-#ifdef USE_VALUES_H
+#if !defined(MACOS) && defined(USE_VALUES_H)
 #include <values.h>
 #endif
 

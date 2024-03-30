@@ -40,6 +40,9 @@
 ################
 # OS Values: AIX, LINUX, SOLARIS, NCR, HPUX, MACOS
 OS = LINUX
+ifeq ($(shell uname), Darwin)
+	OS = MACOS
+endif
 ###########
 # No changes should be necessary below this point
 # Each compile variable is adjusted for the target platform using the OS setting above
@@ -60,9 +63,9 @@ LINUX_CFLAGS	= -O3
 NCR_CFLAGS		= -g 
 MACOS_CFLAGS		= -g -Wall
 SOLARIS_CFLAGS	= -O3 -Wall
-SOL86_CFLAGS	= -O3 
-BASE_CFLAGS    	= -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -DYYDEBUG #-maix64 -DMEM_TEST 
-CFLAGS			= $(BASE_CFLAGS) -D$(OS) $($(OS)_CFLAGS) -fcommon
+SOL86_CFLAGS	= -O3
+BASE_CFLAGS    	= -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -DYYDEBUG #-maix64 -DMEM_TEST
+CFLAGS			= $(BASE_CFLAGS) -D$(OS) $($(OS)_CFLAGS) -fcommon -Wno-implicit-int
 # EXE
 AIX_EXE		= 
 HPUX_EXE	= 
